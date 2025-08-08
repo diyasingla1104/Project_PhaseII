@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔥 Weight Gain Meal Plan - CoreFit</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #3b3b58);
+      color: white;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 20px;
+      color: #ffcc70;
+      text-shadow: 0 0 10px #ffcc70, 0 0 20px #ffaa00;
+      font-size: 36px;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #ffcc70, 0 0 20px #ffaa00;
+      }
+      to {
+        text-shadow: 0 0 20px #ffcc70, 0 0 40px #ffaa00;
+      }
+    }
+
+    .user-info {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .card-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+    }
+
+    .day-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 0 10px #ffaa00;
+    }
+
+    .day-card h2 {
+      color: #ffaa00;
+      text-align: center;
+    }
+
+    .meal {
+      margin-bottom: 15px;
+    }
+
+    .meal strong {
+      color: #ffcc70;
+    }
+
+    .totals {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #66ffcc;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    button {
+      background: linear-gradient(to right, #ffcc70, #ffaa00);
+      color: black;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔥 Weight Gain Meal Plan</h1>
+  <div class="user-info" id="userInfo"></div>
+  <div class="card-container" id="planContainer"></div>
+
+  <div class="button-container">
+    <button onclick="goBack()">← Back to Calculator</button>
+    <button onclick="downloadPDF()">📄 Export to PDF</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    const age = sessionStorage.getItem("age");
+    const gender = sessionStorage.getItem("gender");
+    const weight = sessionStorage.getItem("weight");
+    const height = sessionStorage.getItem("height");
+    const calories = parseInt(sessionStorage.getItem("calories")) || 2500;
+    const dietType = sessionStorage.getItem("dietType") || "vegetarian";
+
+    document.getElementById("userInfo").innerHTML = `
+      <strong>Age:</strong> ${age} &nbsp;&nbsp;
+      <strong>Gender:</strong> ${gender} &nbsp;&nbsp;
+      <strong>Weight:</strong> ${weight} kg &nbsp;&nbsp;
+      <strong>Height:</strong> ${height} cm &nbsp;&nbsp;
+      <strong>Calorie Target:</strong> ${calories} kcal &nbsp;&nbsp;
+      <strong>Diet:</strong> ${dietType}
+    `;
+
+    const mealLibrary = {
+      vegetarian: {
+        breakfast: ["Paneer paratha", "Oats with milk", "Poha with peanuts", "Upma with veggies", "Dalia with ghee", "Banana shake", "Chickpea toast"],
+        lunch: ["Rajma rice", "Chole with roti", "Palak paneer and rice", "Vegetable biryani", "Tofu curry with rice", "Stuffed paratha", "Mix veg khichdi"],
+        snack: ["Nuts & banana", "Fruit chaat", "Peanut chikki", "Paneer cubes", "Energy bar", "Trail mix", "Lassi"],
+        dinner: ["Paneer bhurji with roti", "Vegetable pulao", "Stuffed bell pepper", "Moong dal cheela", "Khichdi and curd", "Veg pasta", "Tofu stir-fry"]
+      },
+      nonveg: {
+        breakfast: ["Egg sandwich", "Chicken sausage & toast", "Omelet with paratha", "Protein shake", "Boiled eggs", "Paneer omelet", "Meat toast"],
+        lunch: ["Chicken biryani", "Egg curry & rice", "Chicken wrap", "Grilled fish with rice", "Butter chicken", "Mutton curry", "Chicken & quinoa"],
+        snack: ["Boiled eggs", "Yogurt with nuts", "Chicken soup", "Milkshake", "Protein bar", "Boiled chicken", "Cheese cubes"],
+        dinner: ["Grilled chicken", "Fish curry", "Egg fried rice", "Chicken sandwich", "Egg toast", "Grilled mutton", "Meat soup"]
+      },
+      vegan: {
+        breakfast: ["Oats with soy milk", "Banana peanut smoothie", "Tofu toast", "Almond milk porridge", "Fruit bowl", "Vegan pancakes", "Chickpea salad"],
+        lunch: ["Chickpea rice", "Tofu stir-fry", "Lentil dal & rice", "Vegetable curry", "Vegan wrap", "Soybean biryani", "Vegan khichdi"],
+        snack: ["Dry fruits", "Peanut butter toast", "Coconut bar", "Trail mix", "Dates & nuts", "Hummus with veggies", "Soy milk shake"],
+        dinner: ["Lentil soup", "Grilled tofu", "Stuffed roti", "Veg fried rice", "Soybean curry", "Vegan pasta", "Vegan stew"]
+      }
+    };
+
+    const planContainer = document.getElementById("planContainer");
+    const meals = mealLibrary[dietType];
+
+    const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    for (let day = 1; day <= 7; day++) {
+      let dayCard = document.createElement("div");
+      dayCard.className = "day-card";
+
+      let totalCal = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
+
+      const bCal = Math.round(calories * 0.25);
+      const lCal = Math.round(calories * 0.3);
+      const sCal = Math.round(calories * 0.15);
+      const dCal = Math.round(calories * 0.3);
+
+      // Total macros based on fixed 25/50/25% split of total daily calories
+      const dailyProteinTotal = Math.round((calories * 0.25) / 4);
+      const dailyCarbsTotal = Math.round((calories * 0.50) / 4);
+      const dailyFatsTotal = Math.round((calories * 0.25) / 9);
+
+      const makeMeal = (type, cal) => {
+        const mealRatio = cal / calories;
+        const pro = Math.round(dailyProteinTotal * mealRatio);
+        const carb = Math.round(dailyCarbsTotal * mealRatio);
+        const fat = Math.round(dailyFatsTotal * mealRatio);
+        totalCal += cal;
+        totalPro += pro;
+        totalCarb += carb;
+        totalFat += fat;
+        return `<div class="meal"><strong>${type}:</strong> ${getRandom(meals[type.toLowerCase()])}<br>
+          <strong>Calories:</strong> ${cal} kcal |
+          <strong>Protein:</strong> ${pro}g |
+          <strong>Carbs:</strong> ${carb}g |
+          <strong>Fats:</strong> ${fat}g</div>`;
+      };
+
+      dayCard.innerHTML = `
+        <h2>Day ${day}</h2>
+        ${makeMeal("Breakfast", bCal)}
+        ${makeMeal("Lunch", lCal)}
+        ${makeMeal("Snack", sCal)}
+        ${makeMeal("Dinner", dCal)}
+        <div class="totals">
+          Total: ${totalCal} kcal | Protein: ${totalPro}g | Carbs: ${totalCarb}g | Fats: ${totalFat}g
+        </div>
+      `;
+      planContainer.appendChild(dayCard);
+    }
+
+    function goBack() {
+      window.location.href = "calorie.html";
+    }
+
+    function downloadPDF() {
+      const element = document.body;
+      html2pdf().from(element).save("weight-gain-meal-plan.pdf");
+    }
+  </script>
+</body>
+</html>

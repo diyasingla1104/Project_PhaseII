@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoreFit | Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f2f2f2;
+      display: flex;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 260px;
+      background: #29293d;
+      color: white;
+      padding: 20px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .profile-header {
+      text-align: center;
+    }
+
+    .profile-header img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 3px solid #ffaa00;
+      margin-bottom: 10px;
+    }
+
+    .profile-header h3 {
+      font-size: 18px;
+      color: #ffaa00;
+      margin: 0;
+    }
+
+    .profile-info {
+      font-size: 14px;
+      margin-top: 15px;
+    }
+
+    .profile-info p {
+      margin: 6px 0;
+    }
+
+    .profile-actions {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .profile-actions button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #ffaa00;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .profile-actions button:hover {
+      background: #ffc24b;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 260px;
+      width: 100%;
+      padding: 20px;
+    }
+
+    header {
+      background-color: #ffaa00;
+      padding: 15px 20px;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    nav a {
+      background-color: #29293d;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #ffaa00;
+      color: black;
+    }
+
+    .content-section {
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      #sidebar {
+        display: none;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔥 Sidebar -->
+  <div id="sidebar">
+  <div class="profile-header">
+    <img src="user.jpg" alt="User" id="profile-pic" />
+    <input type="file" id="uploadProfilePic" accept="image/*" style="display:none;" />
+    <button onclick="document.getElementById('uploadProfilePic').click()" style="margin-top:8px; padding:5px 10px; border:none; border-radius:5px; background:#ffaa00; color:#000; font-weight:bold; cursor:pointer;">
+      Change Picture
+    </button>
+    <h3 id="profile-name">Welcome, User</h3>
+  </div>
+    <div class="profile-info" id="profile-details">
+      <p><i class="fas fa-envelope"></i> Email</p>
+      <p><i class="fas fa-birthday-cake"></i> age: --</p>
+      <p><i class="fas fa-dumbbell"></i> Goal: --</p>
+      <p><i class="fas fa-weight"></i> Weight: --</p>
+    </div>
+    <div class="profile-actions">
+      <button onclick="goToPage('dashboard.html')"><i class="fas fa-tachometer-alt"></i> Dashboard</button>
+      <button onclick="goToPage('progress.html')"><i class="fas fa-chart-line"></i> Progress</button>
+      <button onclick="goToPage('registration.html')"><i class="fas fa-user-plus"></i> Register</button>
+      <button onclick="goToPage('login.html')"><i class="fas fa-sign-in-alt"></i> Login</button>
+</div>
+
+      <button onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- 🌟 Main Content -->
+  <div class="main-content">
+    <header>🔥 CoreFit Home</header>
+
+    <nav>
+      <a href="excercise.html">Exercise</a>
+      <a href="diet.html">Healthy recipes</a>
+      <a href="yoga.html">Yoga</a>
+      <a href="calorie.html">Calorie Calculator</a>
+      <a href="progress.html">Progress</a>
+      <a href="live.html">Live Class</a>
+      <a href="offline.html">offline class</a>
+      <a href="testimonials.html">testimonials</a>
+    </nav>
+
+    <div class="content-section">
+      <h2>Welcome to CoreFit!</h2>
+      <p>This is your personalized fitness platform. Use the tabs above to navigate through your workout, diet, and progress tools.</p>
+    </div>
+  </div>
+
+  <!-- Script to load sessionStorage data -->
+  <script>
+  window.onload = function () {
+    const name = sessionStorage.getItem("name") || "User";
+    const email = sessionStorage.getItem("email") || "Not Provided";
+    const age = sessionStorage.getItem("age") || "--";
+    const goal = sessionStorage.getItem("goal") || "--";
+    const weight = sessionStorage.getItem("weight") || "--";
+
+    document.getElementById("profile-name").innerText = `Welcome, ${name}`;
+    document.getElementById("profile-details").innerHTML = `
+      <p><i class="fas fa-envelope"></i> ${email}</p>
+      <p><i class="fas fa-birthday-cake"></i> age: ${age}</p>
+      <p><i class="fas fa-dumbbell"></i> Goal: ${goal}</p>
+      <p><i class="fas fa-weight"></i> Weight: ${weight} kg</p>
+    `;
+
+    const savedPic = sessionStorage.getItem("profilePic");
+    if (savedPic) {
+      document.getElementById("profile-pic").src = savedPic;
+    }
+
+    document.getElementById("uploadProfilePic").addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const imageBase64 = e.target.result;
+          document.getElementById("profile-pic").src = imageBase64;
+          sessionStorage.setItem("profilePic", imageBase64);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  };
+
+  function goToPage(page) {
+    if (page === "dashboard.html") {
+      const name = sessionStorage.getItem("name");
+      const email = sessionStorage.getItem("email");
+      // ✅ If user data exists, go directly to dashboard
+      if (name && email) {
+        window.location.href = "dashboard.html";
+      } else {
+        // ❌ No login/registration found, redirect to login page
+        alert("Please log in first to view your dashboard.");
+        window.location.href = "login.html";
+      }
+    } else {
+      window.location.href = page;
+    }
+  }
+
+  function logout() {
+    sessionStorage.clear();
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+  }
+</script>
+
+
+</body>
+</html>

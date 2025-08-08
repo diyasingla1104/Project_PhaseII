@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoreFit Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .dashboard {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      width: 100%;
+      max-width: 1000px;
+      text-align: center;
+    }
+    .dashboard h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: #FFD700;
+    }
+    .dashboard p {
+      font-size: 18px;
+      margin: 8px 0;
+    }
+    .buttons {
+      margin-top: 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .btn {
+      background-color: #FFD700;
+      color: #000;
+      font-weight: bold;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn:hover {
+      background-color: #e6c200;
+      transform: translateY(-2px);
+    }
+    .logout-btn {
+      background-color: transparent;
+      border: 2px solid #FFD700;
+      color: #FFD700;
+      margin-top: 30px;
+    }
+    .logout-btn:hover {
+      background-color: #FFD700;
+      color: #000;
+    }
+    .card {
+      background: rgba(255,255,255,0.08);
+      padding: 20px;
+      border-radius: 15px;
+      margin-top: 30px;
+      text-align: left;
+    }
+    canvas {
+      max-width: 100%;
+      margin-top: 15px;
+    }
+    #dark-toggle {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      background: #FFD700;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .light-mode {
+      background: linear-gradient(to right, #f9f9f9, #e2e2e2);
+      color: #000;
+    }
+    .light-mode .dashboard {
+      background-color: #fff;
+      color: #000;
+    }
+    .light-mode .logout-btn {
+      border-color: #000;
+      color: #000;
+    }
+    .light-mode .logout-btn:hover {
+      background-color: #000;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <button id="dark-toggle" onclick="toggleMode()">🌙 Dark</button>
+  <div class="dashboard">
+    <h1>Welcome, <span id="username">User</span>! 💪</h1>
+    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> <span id="email"></span></p>
+    <p><i class="fas fa-bullseye"></i> <strong>Goal:</strong> <span id="goal"></span></p>
+    <p><i class="fas fa-dumbbell"></i> <strong>Program Domain:</strong> <span id="domain"></span></p>
+    <p><i class="fas fa-weight"></i> <strong>Current BMI:</strong> <span id="bmi">--</span></p>
+
+    <div class="buttons">
+      <a href="calorie.html" class="btn"><i class="fas fa-fire"></i> Calorie Calculator</a>
+      <a href="diet-plan.html" class="btn"><i class="fas fa-utensils"></i> Diet Plan</a>
+      <a href="progress.html" class="btn"><i class="fas fa-chart-line"></i> Track Progress</a>
+      <a href="home.html" class="btn"><i class="fas fa-home"></i> Return to Home</a>
+    </div>
+
+    <div class="card">
+      <h3>📊 Weight Progress (Weekly)</h3>
+      <canvas id="weightChart" height="100"></canvas>
+    </div>
+
+    <div class="card">
+      <h3>💧 Daily Water Tracker</h3>
+      <p><strong>Drank:</strong> <span id="waterAmount">0 ml</span> / 2000 ml</p>
+      <div style="background:#555; border-radius:20px; overflow:hidden; height:25px;">
+        <div id="waterFill" style="height:100%; background:linear-gradient(to right, #00c6ff, #0072ff); width:0%; text-align:center; color:white; font-weight:bold; line-height:25px;">
+          0%
+        </div>
+      </div>
+      <button class="btn" style="margin-top:15px;" onclick="addWater()">+ Add Glass (250ml)</button>
+    </div>
+
+    <button class="btn logout-btn" onclick="logout()">🚪 Logout</button>
+  </div>
+
+  <script>
+    // ✅ Load user details from sessionStorage
+    const name = sessionStorage.getItem("name");
+    const email = sessionStorage.getItem("email");
+    const goal = sessionStorage.getItem("goal");
+    const domain = sessionStorage.getItem("domain");
+
+    if (!name || !email) {
+      window.location.href = 'login.html';
+    } else {
+      document.getElementById('username').textContent = name;
+      document.getElementById('email').textContent = email;
+      document.getElementById('goal').textContent = goal || "--";
+      document.getElementById('domain').textContent = domain || "--";
+    }
+
+    // ✅ Get latest weight/height from localStorage
+    const latestWeight = parseFloat(localStorage.getItem('latestWeight')) || parseFloat(sessionStorage.getItem("weight")) || 0;
+    const latestHeight = parseFloat(localStorage.getItem('latestHeight')) || parseFloat(sessionStorage.getItem("height")) || 0;
+
+    // ✅ Calculate BMI
+    if (latestWeight && latestHeight) {
+      const bmi = (latestWeight / ((latestHeight / 100) ** 2)).toFixed(1);
+      document.getElementById('bmi').textContent = bmi;
+    } else {
+      document.getElementById('bmi').textContent = "--";
+    }
+
+    // ✅ Load weight history from localStorage
+    let weightHistory = JSON.parse(localStorage.getItem('weightHistory')) || [];
+
+    // ✅ Render Weight Chart
+    const ctx = document.getElementById('weightChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: weightHistory.map((_, i) => "Week " + (i + 1)),
+        datasets: [{
+          label: 'Weight (kg)',
+          data: weightHistory,
+          borderColor: '#FFD700',
+          backgroundColor: 'rgba(255, 215, 0, 0.2)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 5
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: false, ticks: { color: '#fff' } },
+          x: { ticks: { color: '#fff' } }
+        },
+        plugins: {
+          legend: { labels: { color: '#fff' } }
+        }
+      }
+    });
+
+    // ================= WATER TRACKER =================
+    const dailyGoal = 2000; // ml
+    const glassSize = 250; // ml per click
+
+    let today = new Date().toLocaleDateString();
+    let storedDate = localStorage.getItem("waterDate");
+    let waterDrank = parseInt(localStorage.getItem("waterDrank")) || 0;
+
+    if (storedDate !== today) {
+      waterDrank = 0;
+      localStorage.setItem("waterDate", today);
+      localStorage.setItem("waterDrank", waterDrank);
+    }
+
+    function updateWaterUI() {
+      document.getElementById("waterAmount").textContent = waterDrank + " ml";
+      const percent = Math.min(100, (waterDrank / dailyGoal) * 100);
+      const fill = document.getElementById("waterFill");
+      fill.style.width = percent + "%";
+      fill.textContent = Math.round(percent) + "%";
+    }
+
+    function addWater() {
+      waterDrank += glassSize;
+      if (waterDrank > dailyGoal) waterDrank = dailyGoal;
+      localStorage.setItem("waterDrank", waterDrank);
+      updateWaterUI();
+    }
+
+    updateWaterUI();
+
+    // ✅ Other functions
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    }
+
+    function toggleMode() {
+      document.body.classList.toggle("light-mode");
+      const toggleBtn = document.getElementById("dark-toggle");
+      toggleBtn.textContent = document.body.classList.contains("light-mode") ? "☀️ Light" : "🌙 Dark";
+    }
+  </script>
+</body>
+</html>

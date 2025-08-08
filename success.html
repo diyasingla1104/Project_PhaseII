@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Registration Successful</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 40px;
+      color: #FFD700;
+      margin-bottom: 20px;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    p {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    strong {
+      color: #FFD700;
+    }
+
+    a {
+      margin-top: 25px;
+      font-size: 18px;
+      text-decoration: none;
+      color: #FFD700;
+      border: 2px solid #FFD700;
+      padding: 10px 20px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+
+    a:hover {
+      background-color: #FFD700;
+      color: #000;
+      box-shadow: 0 0 10px #FFD700;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+      }
+      to {
+        text-shadow: 0 0 20px #fff176, 0 0 30px #FFD700;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>✅ Registration Successful!</h1>
+  <p>Thank you for registering. We have received your details.</p>
+  <p>Your selected program: <strong id="program"></strong></p>
+  <a href="home.html">Back to Homepage</a>
+
+  <script>
+    const selectedProgram = localStorage.getItem("selectedProgram");
+    if (selectedProgram) {
+      document.getElementById("program").textContent = selectedProgram;
+    }
+  </script>
+</body>
+</html>

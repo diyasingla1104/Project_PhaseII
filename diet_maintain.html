@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔥 Maintain Weight Meal Plan - CoreFit</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #3b3b58);
+      color: white;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ffcc70;
+      text-shadow: 0 0 10px #ffcc70, 0 0 20px #ffaa00;
+      font-size: 36px;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #ffcc70, 0 0 20px #ffaa00;
+      }
+      to {
+        text-shadow: 0 0 20px #ffcc70, 0 0 40px #ffaa00;
+      }
+    }
+
+    .user-info {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .day-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .day-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    .day-card h2 {
+      color: #ffaa00;
+      margin-bottom: 10px;
+    }
+
+    .meal-section {
+      margin-bottom: 15px;
+    }
+
+    .meal-section h3 {
+      margin-bottom: 5px;
+      font-size: 18px;
+      color: #ffcc70;
+    }
+
+    .meal-section p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .totals {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    .download-btn {
+      display: block;
+      margin: 30px auto 0;
+      padding: 10px 20px;
+      background: linear-gradient(to right, #ffcc70, #ffaa00);
+      color: black;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔥 Maintain Weight Meal Plan</h1>
+  <div class="user-info" id="userInfo"></div>
+  <div class="day-grid" id="mealPlan"></div>
+  <button class="download-btn" onclick="downloadPDF()">⬇ Export to PDF</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const age = sessionStorage.getItem("age");
+    const gender = sessionStorage.getItem("gender");
+    const weight = sessionStorage.getItem("weight");
+    const height = sessionStorage.getItem("height");
+    const calories = parseInt(sessionStorage.getItem("calories"));
+    const dietType = sessionStorage.getItem("dietType") || "vegetarian";
+
+    const userInfo = document.getElementById("userInfo");
+    const mealPlan = document.getElementById("mealPlan");
+
+    userInfo.innerHTML = `
+      <strong>Age:</strong> ${age} &nbsp;&nbsp;
+      <strong>Gender:</strong> ${gender} &nbsp;&nbsp;
+      <strong>Weight:</strong> ${weight} kg &nbsp;&nbsp;
+      <strong>Height:</strong> ${height} cm &nbsp;&nbsp;
+      <strong>Calories:</strong> ${calories} kcal &nbsp;&nbsp;
+      <strong>Diet:</strong> ${dietType}
+    `;
+
+    const meals = {
+      vegetarian: {
+        breakfast: ["Oats with nuts", "Poha with sprouts", "Upma with vegetables", "Vegetable Dalia", "Idli with sambhar", "Multigrain toast with hummus", "Banana smoothie"],
+        lunch: ["Mixed veg curry with brown rice", "Paneer with chapati", "Vegetable pulao with raita", "Chickpea salad & roti", "Rajma with brown rice", "Tofu & vegetable stir fry", "Khichdi with curd"],
+        snack: ["Fruits & almonds", "Roasted makhana", "Chana salad", "Fruit yogurt", "Dry fruits mix", "Sprouted moong", "Corn chaat"],
+        dinner: ["Vegetable soup with roti", "Grilled paneer & veggies", "Mix veg stew with rice", "Vegetable khichdi", "Tofu curry with rice", "Lentil soup & roti", "Stuffed veg paratha"]
+      },
+      nonveg: {
+        breakfast: ["Boiled eggs & toast", "Omelette & roti", "Chicken sausage & oats", "Egg sandwich", "Scrambled eggs with spinach", "Tuna toast", "Chicken wrap"],
+        lunch: ["Grilled chicken & rice", "Fish curry & brown rice", "Egg curry with roti", "Chicken salad bowl", "Fish with sauteed veggies", "Chicken biryani", "Egg bhurji & chapati"],
+        snack: ["Boiled egg & fruit", "Greek yogurt", "Chicken soup cup", "Banana shake", "Egg white sandwich", "Tuna salad", "Protein smoothie"],
+        dinner: ["Grilled fish & veg", "Chicken soup", "Baked chicken with veggies", "Egg fried rice", "Fish curry & roti", "Chicken wrap", "Grilled chicken bowl"]
+      },
+      vegan: {
+        breakfast: ["Soy milk oats", "Peanut butter toast", "Chia seed pudding", "Smoothie bowl", "Vegan pancake", "Tofu scramble", "Avocado toast"],
+        lunch: ["Tofu with rice", "Veggie quinoa bowl", "Chickpea curry & rice", "Stir fry noodles", "Lentil curry with chapati", "Vegan burger & salad", "Sweet potato bowl"],
+        snack: ["Fruit smoothie", "Nuts & seeds", "Hummus with veggies", "Coconut yogurt", "Protein bar", "Trail mix", "Soy milk shake"],
+        dinner: ["Vegan chili", "Lentil soup & rice", "Stuffed bell pepper", "Tofu curry", "Grilled vegetables", "Quinoa pilaf", "Zucchini noodles"]
+      }
+    };
+
+    function generateDayMeals(day) {
+      const b = meals[dietType].breakfast[day];
+      const l = meals[dietType].lunch[day];
+      const s = meals[dietType].snack[day];
+      const d = meals[dietType].dinner[day];
+
+      const baseP = 0.20, baseF = 0.25;
+      const pCals = Math.round(baseP * calories);
+      const fCals = Math.round(baseF * calories);
+      const cCals = Math.round(calories - pCals - fCals);
+
+      const pro = Math.round(pCals / 4);
+      const fat = Math.round(fCals / 9);
+      const carb = Math.round(cCals / 4);
+
+      const mealCal = Math.round(calories / 4);
+      const mealPro = Math.round(pro / 4);
+      const mealFat = Math.round(fat / 4);
+      const mealCarb = Math.round(carb / 4);
+
+      return `
+        <div class="day-card">
+          <h2>Day ${day + 1}</h2>
+          <div class="meal-section">
+            <h3>Breakfast</h3>
+            <p>${b}</p>
+            <p>Calories: ${mealCal}, Protein: ${mealPro}g, Carbs: ${mealCarb}g, Fats: ${mealFat}g</p>
+          </div>
+          <div class="meal-section">
+            <h3>Lunch</h3>
+            <p>${l}</p>
+            <p>Calories: ${mealCal}, Protein: ${mealPro}g, Carbs: ${mealCarb}g, Fats: ${mealFat}g</p>
+          </div>
+          <div class="meal-section">
+            <h3>Snack</h3>
+            <p>${s}</p>
+            <p>Calories: ${mealCal}, Protein: ${mealPro}g, Carbs: ${mealCarb}g, Fats: ${mealFat}g</p>
+          </div>
+          <div class="meal-section">
+            <h3>Dinner</h3>
+            <p>${d}</p>
+            <p>Calories: ${mealCal}, Protein: ${mealPro}g, Carbs: ${mealCarb}g, Fats: ${mealFat}g</p>
+          </div>
+          <div class="totals">Total Daily → Calories: ${calories}, Protein: ${pro}g, Carbs: ${carb}g, Fats: ${fat}g</div>
+        </div>
+      `;
+    }
+
+    for (let i = 0; i < 7; i++) {
+      mealPlan.innerHTML += generateDayMeals(i);
+    }
+
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(12);
+      doc.text("Maintain Weight Meal Plan - CoreFit", 10, 10);
+      doc.text(document.getElementById("userInfo").innerText, 10, 20);
+
+      const cards = document.querySelectorAll(".day-card");
+      let y = 30;
+
+      cards.forEach(card => {
+        const text = card.innerText.split("\n");
+        text.forEach(t => {
+          if (y >= 280) {
+            doc.addPage();
+            y = 10;
+          }
+          doc.text(t, 10, y);
+          y += 7;
+        });
+        y += 5;
+      });
+
+      doc.save("maintain_meal_plan.pdf");
+    }
+  </script>
+</body>
+</html>

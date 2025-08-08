@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoreFit Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #FFD700;
+      font-size: 36px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    .submit-btn {
+      background-color: #FFD700;
+      color: #000;
+      font-weight: bold;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #e6c200;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    .message.success {
+      color: #00FF99;
+    }
+
+    .message.error {
+      color: #FF6666;
+    }
+
+    a {
+      color: #FFD700;
+      display: block;
+      text-align: center;
+      margin-top: 15px;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CoreFit Login</h1>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter your password" required>
+    </div>
+    <button class="submit-btn" id="loginBtn">Login</button>
+    <div id="message" class="message"></div>
+    <a href="registration.html">Don't have an account? Register here</a>
+  </div>
+
+  <script>
+  document.getElementById('loginBtn').addEventListener('click', async () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const messageEl = document.getElementById('message');
+
+    if (!email || !password) {
+      messageEl.textContent = 'Please fill in both fields.';
+      messageEl.className = 'message error';
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+  messageEl.textContent = 'Login successful! Redirecting...';
+  messageEl.className = 'message success';
+
+  const user = result.user;
+  console.log("User data received:", user); // ✅ DEBUG
+
+  sessionStorage.setItem("name", user.name || user.Name || "--");
+  sessionStorage.setItem("email", user.email || user.Email || "--");
+  sessionStorage.setItem("phone", user.phone || user.Phone || "--");
+  sessionStorage.setItem("age", user.age || user.Age || "--");
+  sessionStorage.setItem("gender", user.gender || user.Gender || "--");
+  sessionStorage.setItem("program", user.program || user.Program || "--");
+  sessionStorage.setItem("weight", user.weight || user.Weight || "--");
+  sessionStorage.setItem("goal", user.goal || user.Goal || "--");
+  sessionStorage.setItem("domain", user.domain || user.Domain || "--");
+
+  setTimeout(() => {
+    window.location.href = "home.html";
+  }, 1500);
+
+      } else {
+        messageEl.textContent = result.error || 'Login failed';
+        messageEl.className = 'message error';
+      }
+    } catch (error) {
+      messageEl.textContent = 'Error connecting to server.';
+      messageEl.className = 'message error';
+      console.error(error);
+    }
+  });
+</script>
+
+</body>
+</html>

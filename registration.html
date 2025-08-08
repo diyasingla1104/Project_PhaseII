@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CoreFit Registration</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 800px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #FFD700;
+      font-size: 36px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input, select {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      background-color: #ffffff;
+      color: #000000;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .submit-btn {
+      background-color: #FFD700;
+      color: #000;
+      font-weight: bold;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #e6c200;
+    }
+
+    #success-message {
+      display: none;
+      text-align: center;
+    }
+
+    #success-message h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+
+    #success-message p {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    #success-message strong {
+      color: #FFD700;
+    }
+
+    #success-message a {
+      margin-top: 25px;
+      font-size: 18px;
+      text-decoration: none;
+      color: #FFD700;
+      border: 2px solid #FFD700;
+      padding: 10px 20px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    #success-message a:hover {
+      background-color: #FFD700;
+      color: #000;
+      box-shadow: 0 0 10px #FFD700;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+      }
+      to {
+        text-shadow: 0 0 20px #fff176, 0 0 30px #FFD700;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="registration-form">
+    <h1>CoreFit Registration</h1>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="Enter your name" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="Enter your email" required>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" placeholder="Enter your phone" required>
+      </div>
+      <div class="form-group">
+        <label for="age">Age</label>
+        <input type="number" id="age" placeholder="Enter your age" required>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="weight">Weight (kg)</label>
+        <input type="number" id="weight" placeholder="Enter your weight" required>
+      </div>
+      <div class="form-group">
+        <label for="gender">Gender</label>
+        <select id="gender" required>
+          <option value="">--Select gender--</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ✅ Newly Added Password Field -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Create a password" required>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="goal">Fitness Goal</label>
+        <select id="goal" required>
+          <option value="">--Select your goal--</option>
+          <option value="Weight Loss">Weight Loss</option>
+          <option value="Muscle Gain">Muscle Gain</option>
+          <option value="Maintain Weight">Maintain Weight</option>
+          <option value="Improve Flexibility">Improve Flexibility</option>
+          <option value="Mental Wellness">Mental Wellness</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="domain">Program Domain</label>
+        <select id="domain" required>
+          <option value="">--Select Domain--</option>
+          <option value="Live Classes">Live Classes</option>
+          <option value="Offline Classes">Offline Classes</option>
+          <option value="Counseling">Counseling</option>
+          <option value="Yoga">Yoga</option>
+          <option value="Fitness Programs">Fitness Programs</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="program">Program</label>
+        <select id="program" required>
+          <option value="">--Select Program--</option>
+        </select>
+      </div>
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Registration</button>
+  </div>
+
+  <div class="container" id="success-message">
+    <h1>✅ Registration Successful!</h1>
+    <p>Thank you for registering. We have received your details.</p>
+    <p>Your selected program: <strong id="selected-program"></strong></p>
+    <a href="#" id="back-home">Back to Homepage</a>
+  </div>
+
+  <script>
+  const programData = {
+    "Live Classes": ["Real-Time Workouts", "Interactive Yoga Classes", "Expert Talks & Q&A", "Community Challenges"],
+    "Offline Classes": ["In-Gym Training", "Outdoor Bootcamps", "Wellness Workshops", "Certification Programs"],
+    "Counseling": ["Mental Wellness Support", "Nutritional Counselling", "Fitness Goal Coaching", "Lifestyle Guidance"],
+    "Yoga": ["Asanas", "Wellness Content", "Inspirational Quotes"],
+    "Fitness Programs": ["Strength Training", "Cardio Blast", "Core Conditioning", "Mobility and Flexibility"]
+  };
+
+  const domainSelect = document.getElementById('domain');
+  const programSelect = document.getElementById('program');
+
+  domainSelect.addEventListener('change', () => {
+    const domain = domainSelect.value;
+    programSelect.innerHTML = '<option value="">--Select Program--</option>';
+    if (programData[domain]) {
+      programData[domain].forEach(program => {
+        const option = document.createElement('option');
+        option.value = program;
+        option.textContent = program;
+        programSelect.appendChild(option);
+      });
+    }
+  });
+
+  document.getElementById('submitBtn').addEventListener('click', async () => {
+    const data = {
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      age: document.getElementById('age').value.trim(),
+      gender: document.getElementById('gender').value.trim(),
+      program: document.getElementById('program').value.trim(),
+      weight: document.getElementById('weight').value.trim(),
+      goal: document.getElementById('goal').value.trim(),
+      domain: document.getElementById('domain').value.trim(),
+      password: document.getElementById('password').value.trim()
+    };
+
+    if (Object.values(data).some(val => val === "")) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const testResponse = await fetch('http://localhost:5000/api/test');
+      if (!testResponse.ok) throw new Error('Server is not responding');
+
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        for (const key in data) {
+          sessionStorage.setItem(key, data[key]);
+        }
+        window.location.href = "home.html";
+      } else {
+        alert(`Registration failed: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert("Error: " + error.message);
+    }
+  });
+
+  window.addEventListener('load', async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/test');
+      if (!response.ok) console.warn('Server test failed');
+    } catch (error) {
+      console.warn('Server not available:', error);
+    }
+  });
+</script>
+</body>
+</html>

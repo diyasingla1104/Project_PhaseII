@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🔥 Calorie Calculator 🔥 - CoreFit</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #3b3b58);
+      color: white;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 30px 0 10px;
+      color: #ffcc70;
+      font-size: 40px;
+      text-shadow: 0 0 10px #ffcc70, 0 0 20px #ffaa00;
+      animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #ffcc70, 0 0 20px #ffaa00;
+      }
+      to {
+        text-shadow: 0 0 20px #ffcc70, 0 0 40px #ffaa00;
+      }
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    input::placeholder {
+      color: #bbb;
+    }
+
+    select:invalid {
+      color: #bbb;
+    }
+
+    select option[value=""] {
+      color: #bbb;
+    }
+
+    select option {
+      background-color: #2e2e42;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(to right, #ffcc70, #ffaa00);
+      color: black;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+    }
+
+    .modal-content {
+      background-color: #2a2a3d;
+      margin: 10% auto;
+      padding: 30px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      color: #fff;
+      animation: popIn 0.3s ease-out;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-content h2 {
+      color: #ffcc70;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: white;
+    }
+
+    .option-buttons {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .option-buttons button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔥 Calorie Calculator 🔥</h1>
+  <div class="container">
+    <label for="age">Age</label>
+    <input type="number" id="age" placeholder="Enter your age" />
+
+    <label for="gender">Gender</label>
+    <select id="gender" required>
+      <option value="" disabled selected>Select gender</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+
+    <label for="weight">Weight (kg)</label>
+    <input type="number" id="weight" placeholder="Enter your weight" />
+
+    <label for="height">Height (cm)</label>
+    <input type="number" id="height" placeholder="Enter your height" />
+
+    <label for="activity">Activity Level</label>
+    <select id="activity" required>
+      <option value="" disabled selected>Select activity level</option>
+      <option value="1.2">Sedentary (little or no exercise)</option>
+      <option value="1.375">Lightly active (light exercise/sports 1–3 days/week)</option>
+      <option value="1.55">Moderately active (moderate exercise 3–5 days/week)</option>
+      <option value="1.725">Very active (hard exercise 6–7 days/week)</option>
+      <option value="1.9">Extra active (very hard exercise or physical job)</option>
+    </select>
+
+    <label for="goal">Fitness Goal</label>
+    <select id="goal" required>
+      <option value="" disabled selected>Select goal</option>
+      <option value="weightloss">Weight Loss</option>
+      <option value="weightgain">Weight Gain</option>
+      <option value="maintain">Maintain</option>
+    </select>
+
+    <label for="dietType">Preferred Diet Type</label>
+    <select id="dietType" required>
+      <option value="" disabled selected>Select diet type</option>
+      <option value="vegetarian">Vegetarian</option>
+      <option value="nonveg">Non-Vegetarian</option>
+      <option value="vegan">Vegan</option>
+    </select>
+
+    <button onclick="calculateCalories()">Calculate Calories</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="resultModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Your Daily Calorie Need is:</h2>
+      <p id="calorieDisplay"></p>
+      <div class="option-buttons">
+        <button onclick="goToPlan()">View Personalised Meal Plan</button>
+        <button onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calculateCalories() {
+      const age = +document.getElementById("age").value;
+      const gender = document.getElementById("gender").value;
+      const weight = +document.getElementById("weight").value;
+      const height = +document.getElementById("height").value;
+      const activity = parseFloat(document.getElementById("activity").value);
+      const goal = document.getElementById("goal").value;
+      const dietType = document.getElementById("dietType").value;
+
+      if (!age || !gender || !weight || !height || !activity || !goal || !dietType) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      let bmr = gender === "male"
+        ? 10 * weight + 6.25 * height - 5 * age + 5
+        : 10 * weight + 6.25 * height - 5 * age - 161;
+
+      let calories = bmr * activity;
+
+      if (goal === "weightloss") calories -= 500;
+      else if (goal === "weightgain") calories += 500;
+
+      calories = Math.round(calories);
+
+      sessionStorage.setItem("age", age);
+      sessionStorage.setItem("gender", gender);
+      sessionStorage.setItem("weight", weight);
+      sessionStorage.setItem("height", height);
+      sessionStorage.setItem("activity", activity);
+      sessionStorage.setItem("goal", goal);
+      sessionStorage.setItem("dietType", dietType);
+      sessionStorage.setItem("calories", calories);
+
+      document.getElementById("calorieDisplay").innerText = calories + " kcal/day";
+      document.getElementById("resultModal").style.display = "block";
+    }
+
+    function closeModal() {
+      document.getElementById("resultModal").style.display = "none";
+    }
+
+    function goToPlan() {
+      const goal = sessionStorage.getItem("goal");
+      if (goal === "weightloss") {
+        window.location.href = "diet_weightloss.html";
+      } else if (goal === "weightgain") {
+        window.location.href = "diet_weightgain.html";
+      } else {
+        window.location.href = "diet_maintain.html";
+      }
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById("resultModal");
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>

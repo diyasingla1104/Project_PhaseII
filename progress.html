@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Progress Tracker - CoreFit</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e1e2f, #3b3b58);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 3rem;
+      color: #ffcc70;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px #ffcc70;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 18px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      background: linear-gradient(135deg, #ffcc70, #ffaa00);
+      border: none;
+      color: black;
+      font-weight: bold;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .chart-container {
+      margin: 40px 0;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .summary div {
+      flex: 1 1 45%;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 20px;
+      border-radius: 12px;
+      margin: 10px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .progress-bar-container {
+      margin-top: 30px;
+    }
+
+    .progress-label {
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 25px;
+      background-color: #555;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, #ffcc70, #ffaa00);
+      width: 0;
+      text-align: center;
+      color: black;
+      font-weight: bold;
+      border-radius: 20px;
+      line-height: 25px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📈 Progress Tracker</h1>
+  <div class="container">
+    <div class="form-group">
+      <label for="currentWeight">Current Weight (kg)</label>
+      <input type="number" id="currentWeight" required>
+    </div>
+    <div class="form-group">
+      <label for="height">Height (cm)</label>
+      <input type="number" id="height" required>
+    </div>
+    <button class="btn" onclick="updateProgress()">Update Progress</button>
+
+    <div class="summary">
+      <div><strong>BMI:</strong> <span id="bmi">--</span></div>
+      <div><strong>Last Week:</strong> <span id="lastWeek">--</span> kg</div>
+      <div><strong>This Week:</strong> <span id="thisWeek">--</span> kg</div>
+      <div><strong>Change:</strong> <span id="weightChange">--</span></div>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-label">🎯 Goal Progress</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill">0%</div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="weightChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    let weightHistory = JSON.parse(localStorage.getItem('weightHistory')) || [];
+
+    function calculateBMI(weight, height) {
+      height = height / 100;
+      return (weight / (height * height)).toFixed(1);
+    }
+
+    function updateProgress() {
+      const weight = parseFloat(document.getElementById('currentWeight').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const goalWeight = 56; // Set your target weight here or pull from user profile
+
+      if (!weight || !height) {
+        alert("Please enter both weight and height");
+        return;
+      }
+
+      const bmi = calculateBMI(weight, height);
+      document.getElementById('bmi').innerText = bmi;
+
+      // Update weight history
+      weightHistory.push(weight);
+      if (weightHistory.length > 7) weightHistory.shift(); // Keep only last 7 entries
+      localStorage.setItem('weightHistory', JSON.stringify(weightHistory));
+
+      // Update Summary
+      const lastWeek = weightHistory.length >= 2 ? weightHistory[weightHistory.length - 2] : "--";
+      const thisWeek = weightHistory[weightHistory.length - 1];
+      const change = (thisWeek && lastWeek !== "--") ? (thisWeek - lastWeek).toFixed(1) + " kg" : "--";
+
+      document.getElementById('lastWeek').innerText = lastWeek;
+      document.getElementById('thisWeek').innerText = thisWeek;
+      document.getElementById('weightChange').innerText = change;
+
+      // Update Goal progress
+      const progress = Math.min(100, ((weight / goalWeight) * 100).toFixed(0));
+      const progressFill = document.getElementById('progressFill');
+      progressFill.style.width = progress + "%";
+      progressFill.innerText = progress + "%";
+
+      // Update Chart
+      renderChart();
+    }
+
+    function renderChart() {
+      const ctx = document.getElementById('weightChart').getContext('2d');
+      if (window.myChart) window.myChart.destroy();
+      window.myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: weightHistory.map((_, i) => "Week " + (i + 1)),
+          datasets: [{
+            label: 'Weight (kg)',
+            data: weightHistory,
+            borderColor: '#ffaa00',
+            backgroundColor: 'rgba(255, 204, 112, 0.2)',
+            borderWidth: 3,
+            pointBackgroundColor: '#fff',
+            tension: 0.3,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              labels: {
+                color: 'white'
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: {
+                color: 'white'
+              }
+            },
+            y: {
+              ticks: {
+                color: 'white'
+              },
+              beginAtZero: false
+            }
+          }
+        }
+      });
+    }
+
+    window.onload = renderChart;
+  </script>
+</body>
+</html>

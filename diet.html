@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Healthy Recipes | CoreFit</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://apis.google.com/js/platform.js"></script>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+  h1 {
+    color: #ffaa00;
+    font-size: 40px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(255,170,0,0.7);
+  }
+  a.return-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #ffaa00;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  .subscribe-container { margin-bottom: 20px; }
+  .tabs { display: flex; justify-content: center; margin-bottom: 15px; }
+  .tab {
+    padding: 10px 20px; background: rgba(255,255,255,0.1); color: white;
+    cursor: pointer; border-radius: 8px; margin: 0 5px;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  .tab:hover { transform: translateY(-2px); }
+  .tab.active { background: #ffaa00; color: black; font-weight: bold; }
+  .search-bar { margin-bottom: 20px; }
+  .search-bar input {
+    padding: 10px; width: 250px;
+    border-radius: 6px; border: none; outline: none; font-size: 15px;
+  }
+  .video-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    justify-content: center;
+  }
+  .video {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+    border: 2px solid transparent;
+  }
+  .video:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(255,170,0,0.7);
+    border: 2px solid #ffaa00;
+  }
+  .thumb-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+  .thumb-wrapper img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .play-icon {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    font-size: 40px;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 10px 15px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+  .thumb-wrapper:hover .play-icon {
+    background: rgba(255,170,0,0.7);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  .video p { margin: 8px 0 4px; font-size: 16px; font-weight: bold; color: #ffcc70; }
+  .video .meta { font-size: 13px; color: #bbb; }
+  .popup {
+    display: none; position: fixed; z-index: 999; left: 0; top: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+    justify-content: center; align-items: center; padding: 10px;
+  }
+  .popup-content {
+    background: #1c1c1c; padding: 15px; border-radius: 10px;
+    max-width: 800px; width: 100%; text-align: center;
+    position: relative; border: 2px solid #ffaa00;
+  }
+  .popup-content iframe { width: 100%; height: 450px; border-radius: 10px; }
+  .popup-title { font-size: 18px; color: #ffcc70; margin-top: 10px; }
+  .popup-meta { font-size: 14px; color: #bbb; margin-bottom: 10px; }
+  .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; color: white; cursor: pointer; }
+  .popup-actions { display: flex; justify-content: center; gap: 10px; }
+  .watch-youtube, .share-btn {
+    display: inline-block; margin-top: 10px; padding: 10px 20px;
+    border-radius: 8px; font-weight: bold; text-decoration: none;
+  }
+  .watch-youtube { background: #ff0000; color: white; }
+  .watch-youtube:hover { background: #cc0000; }
+  .share-btn { background: #ffaa00; color: black; cursor: pointer; }
+  .share-btn:hover { background: #ffcc33; }
+  .nav-btn {
+    background: #ffaa00; color: black; padding: 8px 14px; margin: 10px;
+    border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s ease;
+  }
+  .nav-btn:hover { background: #ffcc33; }
+  .sticky-banner {
+    position: fixed; bottom: 0; left: 0; width: 100%; background: #ffaa00; color: black;
+    padding: 10px; display: flex; justify-content: center; align-items: center;
+    font-weight: bold; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.4);
+  }
+  .sticky-banner a {
+    background: #ff0000; color: white; padding: 6px 12px;
+    border-radius: 6px; margin-left: 10px; text-decoration: none; font-weight: bold;
+  }
+  .sticky-banner a:hover { background: #cc0000; }
+  @media (max-width: 600px) {
+    h1 { font-size: 28px; }
+    .popup-content iframe { height: 220px; }
+  }
+</style>
+</head>
+<body>
+
+<a href="home.html" class="return-link">⬅ Back to Homepage</a>
+<h1>🍽 Healthy Recipes</h1>
+
+<div class="subscribe-container">
+  <div class="g-ytsubscribe" data-channelid="UCLo8sDgzVSpjES4x7Icj43g" data-layout="full" data-theme="dark" data-count="default"></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="latestTab">Latest</div>
+  <div class="tab" id="popularTab">Most Popular</div>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="Search recipes...">
+</div>
+
+<div class="video-list" id="videoList">Loading...</div>
+
+<div class="popup" id="videoPopup">
+  <div class="popup-content" id="popupContent">
+    <span class="close-btn" onclick="closePopup()">&times;</span>
+    <iframe id="popupVideo" src="" frameborder="0" allowfullscreen></iframe>
+    <div class="popup-title" id="popupTitle"></div>
+    <div class="popup-meta" id="popupMeta"></div>
+    <div>
+      <button class="nav-btn" onclick="prevVideo()">⬅ Prev</button>
+      <button class="nav-btn" onclick="nextVideo()">Next ➡</button>
+    </div>
+    <div class="popup-actions">
+      <a id="youtubeLink" href="#" target="_blank" class="watch-youtube">▶ Watch on YouTube</a>
+      <button class="share-btn" onclick="shareVideo()">Share</button>
+    </div>
+  </div>
+</div>
+
+<div class="sticky-banner">
+  Enjoyed these recipes? Subscribe for more!
+  <a href="https://www.youtube.com/channel/UCLo8sDgzVSpjES4x7Icj43g?sub_confirmation=1" target="_blank">Subscribe</a>
+</div>
+
+<script>
+const API_KEY = "AIzaSyDchNnftUIKI_kUso6BgqjWjapB0aDpXNo";
+const CHANNEL_ID = "UCLo8sDgzVSpjES4x7Icj43g";
+let videos = [];
+let currentIndex = 0;
+let observer;
+
+function formatViews(num) {
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M views";
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K views";
+  return num + " views";
+}
+
+function timeAgo(date) {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  const intervals = [
+    { label: 'year', secs: 31536000 },
+    { label: 'month', secs: 2592000 },
+    { label: 'week', secs: 604800 },
+    { label: 'day', secs: 86400 },
+    { label: 'hour', secs: 3600 },
+    { label: 'minute', secs: 60 }
+  ];
+  for (const i of intervals) {
+    const count = Math.floor(seconds / i.secs);
+    if (count >= 1) return `${count} ${i.label}${count > 1 ? 's' : ''} ago`;
+  }
+  return "just now";
+}
+
+async function fetchVideos(order = "date") {
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=id&order=${order}&maxResults=20`);
+  const data = await res.json();
+  const ids = data.items.map(v => v.id.videoId).join(",");
+  const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${ids}&part=snippet,statistics`);
+  const statsData = await statsRes.json();
+  return statsData.items;
+}
+
+function renderVideos(list, limit = 9) {
+  const container = document.getElementById("videoList");
+  container.innerHTML = "";
+  list.slice(0, limit).forEach((item, index) => appendVideo(item, index, list));
+
+  if (limit < list.length) {
+    observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        observer.disconnect();
+        renderVideos(list, limit + 9);
+      }
+    });
+    observer.observe(document.querySelector(".video-list .video:last-child"));
+  }
+}
+
+function appendVideo(item, index, list) {
+  const videoId = item.id;
+  const title = item.snippet.title;
+  const thumbnail = item.snippet.thumbnails.high.url;
+  const views = formatViews(parseInt(item.statistics.viewCount));
+  const date = timeAgo(item.snippet.publishedAt);
+  const div = document.createElement("div");
+  div.classList.add("video");
+  div.innerHTML = `
+    <div class="thumb-wrapper">
+      <img src="${thumbnail}" alt="${title}">
+      <span class="play-icon"><i class="fas fa-play"></i></span>
+    </div>
+    <p>${title}</p>
+    <div class="meta">${views} • ${date}</div>
+  `;
+  div.addEventListener("click", () => openPopup(index, list));
+  document.getElementById("videoList").appendChild(div);
+}
+
+function openPopup(index, list) {
+  videos = list;
+  currentIndex = index;
+  const vid = list[index];
+  const videoId = vid.id;
+  const iframe = document.getElementById("popupVideo");
+  iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+  document.getElementById("youtubeLink").href = `https://www.youtube.com/watch?v=${videoId}`;
+  document.getElementById("popupTitle").textContent = vid.snippet.title;
+  document.getElementById("popupMeta").textContent = `${formatViews(parseInt(vid.statistics.viewCount))} • ${timeAgo(vid.snippet.publishedAt)}`;
+  document.getElementById("videoPopup").style.display = "flex";
+
+  iframe.onload = () => {
+    const player = new YT.Player('popupVideo', {
+      events: { 'onStateChange': e => { if (e.data === YT.PlayerState.ENDED) nextVideo(); } }
+    });
+  };
+}
+
+function closePopup() {
+  document.getElementById("popupVideo").src = "";
+  document.getElementById("videoPopup").style.display = "none";
+}
+
+function nextVideo() { if (currentIndex < videos.length - 1) openPopup(currentIndex + 1, videos); }
+function prevVideo() { if (currentIndex > 0) openPopup(currentIndex - 1, videos); }
+
+function shareVideo() {
+  const url = document.getElementById("youtubeLink").href;
+  navigator.clipboard.writeText(url);
+  alert("Video link copied to clipboard!");
+}
+
+document.getElementById("videoPopup").addEventListener("click", e => {
+  if (!document.getElementById("popupContent").contains(e.target)) closePopup();
+});
+
+document.getElementById("searchInput").addEventListener("input", e => {
+  const term = e.target.value.toLowerCase();
+  const filtered = videos.filter(v => v.snippet.title.toLowerCase().includes(term));
+  renderVideos(filtered);
+});
+
+document.getElementById("latestTab").addEventListener("click", async () => {
+  document.getElementById("latestTab").classList.add("active");
+  document.getElementById("popularTab").classList.remove("active");
+  const latest = await fetchVideos("date");
+  videos = latest;
+  renderVideos(latest);
+});
+
+document.getElementById("popularTab").addEventListener("click", async () => {
+  document.getElementById("popularTab").classList.add("active");
+  document.getElementById("latestTab").classList.remove("active");
+  const latest = await fetchVideos("date");
+  const sorted = [...latest].sort((a,b) => parseInt(b.statistics.viewCount) - parseInt(a.statistics.viewCount));
+  videos = sorted;
+  renderVideos(sorted);
+});
+
+(async function init() {
+  const latest = await fetchVideos("date");
+  videos = latest;
+  renderVideos(latest);
+})();
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+
+</body>
+</html>
