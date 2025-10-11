@@ -1,193 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Offline Classes</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline Class Registration - CoreFit</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
     body {
-      background: #121212; /* Dark background */
+      font-family: Arial, sans-serif;
+      background: #0f172a;
       color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
+      text-align: center;
+      padding: 20px;
     }
-
-    .return-link {
-      font-size: 16px;
-      color: #ff6f00; /* Vibrant orange-yellow */
-      cursor: pointer;
-      text-decoration: underline;
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-weight: bold;
-    }
-
     h1 {
-      color: #ff6f00; /* Vibrant orange-yellow for the heading */
-      font-size: 48px;
-      margin-bottom: 30px;
-      text-align: center;
-      text-shadow: 0 0 10px rgba(255, 111, 0, 0.6), 0 0 20px rgba(255, 111, 0, 0.8);
+      color: #facc15;
     }
-
-    .container {
-      background-color: rgba(255, 255, 255, 0.1); /* Translucent dark background */
-      padding: 50px;
-      border-radius: 20px;
-      width: 1500px;
-      height: 500px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
-    }
-
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .tab {
-      background-color: #34495e; /* Dark grayish blue */
-      color: white;
-      padding: 20px 30px;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
+    form {
+      background: #1e293b;
+      padding: 20px;
       border-radius: 10px;
-      transition: background-color 0.3s ease;
-      width: 300px;
-      height: 200px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Slight shadow for depth */
+      max-width: 400px;
+      margin: auto;
     }
-
-    .tab:hover {
-      background-color: #2c3e50; /* Darker shade on hover */
-    }
-
-    .tab.active {
-      background-color: #3498db; /* Blue color when active */
-    }
-
-    .tab ul {
-      list-style-type: none;
-      padding: 0;
-      font-size: 14px;
-      line-height: 1.4;
-      font-weight: lighter;
-      text-align: left;
-      margin-top: 10px;
-    }
-
-    .tab ul li {
-      margin-bottom: 8px;
-    }
-
-    .apply-btn {
-      background-color: #ff6f00; /* Vibrant orange-yellow for the button */
-      color: black;
-      font-weight: bold;
-      padding: 15px 40px;
+    input, select, button {
+      width: 90%;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
       border: none;
-      border-radius: 10px;
-      font-size: 20px;
-      text-align: center;
-      margin-top: 30px;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
+      font-size: 1em;
+    }
+    button {
+      background: #facc15;
+      color: black;
       cursor: pointer;
     }
-
-    .apply-btn:hover {
-      background-color: #e67e22; /* Slightly darker orange on hover */
-      transform: translateY(-2px); /* Slight lift effect */
+    #payment-section {
+      margin-top: 20px;
+      display: none;
     }
-
-    @media (max-width: 768px) {
-      .tabs {
-        flex-direction: column;
-      }
-
-      .tab {
-        width: 100%;
-        text-align: center;
-      }
+    #qr {
+      margin-top: 15px;
+    }
+    .amount {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #22c55e;
     }
   </style>
 </head>
 <body>
-  <a href="home.html" class="return-link">Return to Homepage</a>
-  <h1>Offline Classes</h1>
-  <div class="container">
-    <div class="tabs">
-      <div class="tab active" data-tab="In-Gym Training">
-        <i class="fas fa-dumbbell"></i> In-Gym Training
-        <ul>
-          <li>Train with experts at CoreFit-affiliated gyms.</li>
-          <li>Strength, cardio, and endurance workouts.</li>
-          <li>Customized fitness schedules.</li>
-        </ul>
-      </div>
-      <div class="tab" data-tab="Outdoor Bootcamps">
-        <i class="fas fa-tree"></i> Outdoor Bootcamps
-        <ul>
-          <li>Group training in parks and community areas.</li>
-          <li>Fun sessions with music and trainers.</li>
-          <li>Improve stamina, core, and mobility.</li>
-        </ul>
-      </div>
-      <div class="tab" data-tab="Wellness Workshops">
-        <i class="fas fa-heartbeat"></i> Wellness Workshops
-        <ul>
-          <li>Sessions on lifestyle, recovery, and stress.</li>
-          <li>Guided by certified health professionals.</li>
-          <li>Offline journaling and community meetups.</li>
-        </ul>
-      </div>
-      <div class="tab" data-tab="Certification Programs">
-        <i class="fas fa-certificate"></i> Certification Programs
-        <ul>
-          <li>Offline fitness and nutrition certification.</li>
-          <li>Structured exams and practical training.</li>
-          <li>Advance your career with CoreFit credentials.</li>
-        </ul>
-      </div>
-    </div>
-    <button class="apply-btn" id="registerBtn">Register</button>
+<a href="home.html" class="return-link">⬅ Back to Homepage</a>
+
+  <h1>🏋️ Offline Class Registration</h1>
+  <form id="offlineForm">
+    <input type="text" id="name" placeholder="Full Name" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="tel" id="phone" placeholder="Phone Number" required>
+
+    <label for="date">Preferred Date:</label>
+    <input type="date" id="date" required>
+
+    <input type="text" id="timing" placeholder="Preferred Timing (e.g., 6PM - 7PM)" required>
+
+    <label for="location">Select Branch:</label>
+    <select id="location" required>
+      <option value="">--Choose Location--</option>
+      <option value="Home">Home</option>
+      <option value="Bootcamps">Bootcamps</option>
+      <option value="Outdoors">Outdoors</option>
+    </select>
+
+    <label for="plan">Select Plan:</label>
+    <select id="plan" required>
+      <option value="">--Choose a Plan--</option>
+      <option value="Basic:799">Basic - ₹799</option>
+      <option value="Standard:1499">Standard - ₹1499</option>
+      <option value="Premium:2499">Premium - ₹2499</option>
+    </select>
+
+    <button type="submit">Register & Pay</button>
+  </form>
+
+  <div id="payment-section">
+    <p>You have selected the <span id="selectedPlan"></span> plan.</p>
+    <p class="amount">Please pay: ₹<span id="price"></span></p>
+    <div id="qr"></div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
   <script>
-    const tabs = document.querySelectorAll('.tab');
-    let selectedTab = "In-Gym Training"; // default
+    const form = document.getElementById("offlineForm");
+    const qrDiv = document.getElementById("qr");
+    const paymentSection = document.getElementById("payment-section");
+    const selectedPlan = document.getElementById("selectedPlan");
+    const priceEl = document.getElementById("price");
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        selectedTab = tab.dataset.tab;
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+      const date = document.getElementById("date").value;
+      const timing = document.getElementById("timing").value;
+      const location = document.getElementById("location").value;
+      const planData = document.getElementById("plan").value;
+
+      if (!planData) {
+        alert("Please select a plan");
+        return;
+      }
+
+      const [plan, amount] = planData.split(":");
+
+      // Show selected plan and price
+      selectedPlan.textContent = plan;
+      priceEl.textContent = amount;
+
+      // Generate QR Code with UPI link (replace with your UPI ID)
+      const upiID = "9354543672@pthdfc"; 
+      const upiLink = `upi://pay?pa=${upiID}&pn=CoreFit&am=${amount}&cu=INR`;
+
+      qrDiv.innerHTML = ""; 
+      QRCode.toCanvas(document.createElement("canvas"), upiLink, (err, canvas) => {
+        if (!err) qrDiv.appendChild(canvas);
       });
-    });
 
-    const registerBtn = document.getElementById('registerBtn');
-    registerBtn.addEventListener('click', () => {
-      window.location.href = `registration.html?type=${encodeURIComponent(selectedTab)}`;
+      paymentSection.style.display = "block";
+
+      // Save offline registration details in backend
+      await fetch("http://localhost:5000/api/offline-register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, date, timing, location, plan, amount })
+      });
     });
   </script>
 </body>

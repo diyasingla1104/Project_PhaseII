@@ -1,194 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Exercise</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background: #121212; /* Dark background for the entire page */
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    }
-
-    .return-link {
-      font-size: 16px;
-      color: #ff6f00; /* Bright orange-yellow for the link */
-      cursor: pointer;
-      text-decoration: underline;
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-weight: bold;
-    }
-
-    h1 {
-      color: #ff6f00; /* Vibrant orange-yellow for the heading */
-      font-size: 48px;
-      margin-bottom: 30px;
-      text-align: center;
-      text-shadow: 0 0 10px rgba(255, 111, 0, 0.6), 0 0 20px rgba(255, 111, 0, 0.8);
-    }
-
-    .container {
-      background-color: rgba(255, 255, 255, 0.1); /* Dark translucent background for container */
-      padding: 50px;
-      border-radius: 20px;
-      width: 1500px;
-      height: 500px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Subtle shadow */
-    }
-
-    .tabs {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
-
-    .tab {
-      background-color: #34495e; /* Dark grayish blue */
-      color: white;
-      padding: 20px 30px;
-      font-size: 24px;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 10px;
-      transition: background-color 0.3s ease;
-      width: 300px;
-      height: 200px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Slight shadow for depth */
-    }
-
-    .tab:hover {
-      background-color: #2c3e50; /* Darker shade on hover */
-    }
-
-    .tab.active {
-      background-color: #3498db; /* Blue color when the tab is active */
-    }
-
-    .tab ul {
-      list-style-type: none;
-      padding: 0;
-      font-size: 14px;
-      line-height: 1.4;
-      font-weight: lighter;
-      text-align: left;
-      margin-top: 10px;
-    }
-
-    .tab ul li {
-      margin-bottom: 8px;
-    }
-
-    .apply-btn {
-      background-color: #ff6f00; /* Bright orange-yellow for the button */
-      color: black;
-      font-weight: bold;
-      padding: 15px 40px;
-      border: none;
-      border-radius: 10px;
-      font-size: 20px;
-      text-align: center;
-      margin-top: 30px;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      text-decoration: none;
-      display: inline-block;
-      cursor: pointer;
-    }
-
-    .apply-btn:hover {
-      background-color: #e67e22; /* Slightly darker orange */
-      transform: translateY(-2px); /* Slight lift effect */
-    }
-
-    @media (max-width: 768px) {
-      .tabs {
-        flex-direction: column;
-      }
-
-      .tab {
-        width: 100%;
-        text-align: center;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Workout Videos | CoreFit</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://apis.google.com/js/platform.js"></script>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(to right, #000000, #232526, #414345);
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+  h1 {
+    color: #00ff88;
+    font-size: 40px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 12px rgba(0,255,136,0.8);
+  }
+  a.return-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #00ff88;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  .subscribe-container { margin-bottom: 20px; }
+  .tabs { display: flex; justify-content: center; margin-bottom: 15px; }
+  .tab {
+    padding: 10px 20px; background: rgba(255,255,255,0.1); color: white;
+    cursor: pointer; border-radius: 8px; margin: 0 5px;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  .tab:hover { transform: translateY(-2px); }
+  .tab.active { background: #00ff88; color: black; font-weight: bold; }
+  .filter-bar {
+    margin-bottom: 20px;
+  }
+  select {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    font-size: 15px;
+  }
+  .video-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 🔥 5 videos per row */
+    gap: 20px;
+    justify-content: center;
+  }
+  .video {
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border 0.3s ease;
+    border: 2px solid transparent;
+  }
+  .video:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 15px rgba(0,255,136,0.7);
+    border: 2px solid #00ff88;
+  }
+  .thumb-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+  .thumb-wrapper img {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .play-icon {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(1);
+    font-size: 40px;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 10px 15px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+  .thumb-wrapper:hover .play-icon {
+    background: rgba(0,255,136,0.7);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  .video p { margin: 8px 0 4px; font-size: 16px; font-weight: bold; color: #00ffcc; }
+  .video .meta { font-size: 13px; color: #bbb; }
+  .popup {
+    display: none; position: fixed; z-index: 999; left: 0; top: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.85);
+    justify-content: center; align-items: center; padding: 10px;
+  }
+  .popup-content {
+    background: #1c1c1c; padding: 15px; border-radius: 10px;
+    max-width: 800px; width: 100%; text-align: center;
+    position: relative; border: 2px solid #00ff88;
+  }
+  .popup-content iframe { width: 100%; height: 450px; border-radius: 10px; }
+  .popup-title { font-size: 18px; color: #00ffcc; margin-top: 10px; }
+  .popup-meta { font-size: 14px; color: #bbb; margin-bottom: 10px; }
+  .close-btn { position: absolute; top: 10px; right: 15px; font-size: 24px; color: white; cursor: pointer; }
+  .popup-actions { display: flex; justify-content: center; gap: 10px; }
+  .watch-youtube, .share-btn {
+    display: inline-block; margin-top: 10px; padding: 10px 20px;
+    border-radius: 8px; font-weight: bold; text-decoration: none;
+  }
+  .watch-youtube { background: #ff0000; color: white; }
+  .watch-youtube:hover { background: #cc0000; }
+  .share-btn { background: #00ff88; color: black; cursor: pointer; }
+  .share-btn:hover { background: #33ff99; }
+  .nav-btn {
+    background: #00ff88; color: black; padding: 8px 14px; margin: 10px;
+    border-radius: 6px; cursor: pointer; font-weight: bold; transition: background 0.3s ease;
+  }
+  .nav-btn:hover { background: #33ff99; }
+  .sticky-banner {
+    position: fixed; bottom: 0; left: 0; width: 100%; background: #00ff88; color: black;
+    padding: 10px; display: flex; justify-content: center; align-items: center;
+    font-weight: bold; z-index: 1000; box-shadow: 0 -2px 10px rgba(0,0,0,0.4);
+  }
+  .sticky-banner a {
+    background: #ff0000; color: white; padding: 6px 12px;
+    border-radius: 6px; margin-left: 10px; text-decoration: none; font-weight: bold;
+  }
+  .sticky-banner a:hover { background: #cc0000; }
+  @media (max-width: 1000px) {
+    .video-list { grid-template-columns: repeat(3, 1fr); } /* adjust for medium screens */
+  }
+  @media (max-width: 600px) {
+    h1 { font-size: 28px; }
+    .video-list { grid-template-columns: repeat(1, 1fr); } /* mobile 1 per row */
+    .popup-content iframe { height: 220px; }
+  }
+</style>
 </head>
 <body>
-  <a href="home.html" class="return-link">Return to Homepage</a>
-  <h1>Exercise</h1>
-  <div class="container">
-    <div class="tabs">
-      <div class="tab active" data-tab="Strength Training">
-        <i class="fas fa-dumbbell"></i> Strength Training
-        <ul>
-          <li>Increase muscle mass and endurance.</li>
-          <li>Workouts with free weights, machines, and bodyweight exercises.</li>
-          <li>Programmed for all skill levels.</li>
-        </ul>
-      </div>
-      <div class="tab" data-tab="Cardio Workouts">
-        <i class="fas fa-heartbeat"></i> Cardio Workouts
-        <ul>
-          <li>Boost heart health with running, cycling, and swimming.</li>
-          <li>Fat-burning exercises to increase stamina.</li>
-          <li>Customizable intensity levels.</li>
-        </ul>
-      </div>
-      <div class="tab" data-tab="Mobility & Flexibility">
-        <i class="fas fa-sync-alt"></i> Mobility & Flexibility
-        <ul>
-          <li>Improve range of motion and reduce injuries.</li>
-          <li>Stretching routines and mobility drills.</li>
-          <li>Enhance overall physical performance.</li>
-        </ul>
-      </div>
-      <div class="tab" data-tab="Injury Rehabilitation">
-        <i class="fas fa-wheelchair"></i> Injury Rehabilitation
-        <ul>
-          <li>Targeted exercises for post-injury recovery.</li>
-          <li>Work with specialists.</li>
-          <li>customised programs for specific needs</li>
-        </ul>
-      </div>
+
+<a href="home.html" class="return-link">⬅ Back to Homepage</a>
+<h1>💪 Workout Videos</h1>
+
+<div class="subscribe-container">
+  <div class="g-ytsubscribe" data-channelid="UCLo7I3I3L0H1-_atc4UEHSg" data-layout="full" data-theme="dark" data-count="default"></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" id="latestTab">Latest</div>
+  <div class="tab" id="popularTab">Most Popular</div>
+</div>
+
+<div class="filter-bar">
+  <label for="bodyFilter">Filter by body part: </label>
+  <select id="bodyFilter">
+    <option value="all">All</option>
+    <option value="core">Core</option>
+    <option value="arms">Arms</option>
+    <option value="thighs">Thighs</option>
+    <option value="shoulder">Shoulder</option>
+  </select>
+</div>
+
+<div class="video-list" id="videoList">Loading...</div>
+
+<!-- Popup -->
+<div class="popup" id="videoPopup">
+  <div class="popup-content" id="popupContent">
+    <span class="close-btn" onclick="closePopup()">&times;</span>
+    <iframe id="popupVideo" src="" frameborder="0" allowfullscreen></iframe>
+    <div class="popup-title" id="popupTitle"></div>
+    <div class="popup-meta" id="popupMeta"></div>
+    <div>
+      <button class="nav-btn" onclick="prevVideo()">⬅ Prev</button>
+      <button class="nav-btn" onclick="nextVideo()">Next ➡</button>
     </div>
-    <button class="apply-btn" id="registerBtn">Register</button>
+    <div class="popup-actions">
+      <a id="youtubeLink" href="#" target="_blank" class="watch-youtube">▶ Watch on YouTube</a>
+      <button class="share-btn" onclick="shareVideo()">Share</button>
+    </div>
   </div>
+</div>
 
-  <script>
-    const tabs = document.querySelectorAll('.tab');
-    let selectedType = "Strength Training";
+<div class="sticky-banner">
+  Enjoyed these workouts? Subscribe for more!
+  <a href="https://www.youtube.com/channel/UCLo7I3I3L0H1-_atc4UEHSg?sub_confirmation=1" target="_blank">Subscribe</a>
+</div>
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        selectedType = tab.getAttribute('data-tab');
-      });
-    });
+<script>
+const API_KEY = "AIzaSyDJrUHUyTUoPKvSTTkXKajnR671rNVzUhg";
+const CHANNEL_ID = "UCLo7I3I3L0H1-_atc4UEHSg";
+let videos = [];
+let currentIndex = 0;
 
-    document.getElementById('registerBtn').addEventListener('click', () => {
-      const url = `registration.html?type=${encodeURIComponent(selectedType)}`;
-      window.location.href = url;
-    });
-  </script>
+function formatViews(num) {
+  if (!num) return "";
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + "M views";
+  if (num >= 1_000) return (num / 1_000).toFixed(1) + "K views";
+  return num + " views";
+}
+
+function timeAgo(date) {
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  const intervals = [
+    { label: 'year', secs: 31536000 },
+    { label: 'month', secs: 2592000 },
+    { label: 'week', secs: 604800 },
+    { label: 'day', secs: 86400 },
+    { label: 'hour', secs: 3600 },
+    { label: 'minute', secs: 60 }
+  ];
+  for (const i of intervals) {
+    const count = Math.floor(seconds / i.secs);
+    if (count >= 1) return `${count} ${i.label}${count > 1 ? 's' : ''} ago`;
+  }
+  return "just now";
+}
+
+async function fetchVideos(order = "date") {
+  const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=id&order=${order}&maxResults=20&type=video`);
+  const data = await res.json();
+  const ids = data.items.map(v => v.id.videoId).filter(Boolean).join(",");
+  const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?key=${API_KEY}&id=${ids}&part=snippet,statistics`);
+  const statsData = await statsRes.json();
+  return statsData.items.filter(v => v.snippet && v.snippet.title);
+}
+
+function renderVideos(list) {
+  const container = document.getElementById("videoList");
+  container.innerHTML = "";
+  list.forEach((item, index) => appendVideo(item, index, list));
+}
+
+function appendVideo(item, index, list) {
+  const videoId = item.id;
+  const title = item.snippet.title;
+  const thumbnail = item.snippet.thumbnails.high.url;
+  const views = formatViews(parseInt(item.statistics.viewCount));
+  const date = timeAgo(item.snippet.publishedAt);
+  const div = document.createElement("div");
+  div.classList.add("video");
+  div.innerHTML = `
+    <div class="thumb-wrapper">
+      <img src="${thumbnail}" alt="${title}">
+      <span class="play-icon"><i class="fas fa-play"></i></span>
+    </div>
+    <p>${title}</p>
+    <div class="meta">${views} • ${date}</div>
+  `;
+  div.addEventListener("click", () => openPopup(index, list));
+  document.getElementById("videoList").appendChild(div);
+}
+
+function openPopup(index, list) {
+  videos = list;
+  currentIndex = index;
+  const vid = list[index];
+  const videoId = vid.id;
+  const iframe = document.getElementById("popupVideo");
+  iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+  document.getElementById("youtubeLink").href = `https://www.youtube.com/watch?v=${videoId}`;
+  document.getElementById("popupTitle").textContent = vid.snippet.title;
+  document.getElementById("popupMeta").textContent = `${formatViews(parseInt(vid.statistics.viewCount))} • ${timeAgo(vid.snippet.publishedAt)}`;
+  document.getElementById("videoPopup").style.display = "flex";
+}
+
+function closePopup() {
+  document.getElementById("popupVideo").src = "";
+  document.getElementById("videoPopup").style.display = "none";
+}
+
+function nextVideo() { if (currentIndex < videos.length - 1) openPopup(currentIndex + 1, videos); }
+function prevVideo() { if (currentIndex > 0) openPopup(currentIndex - 1, videos); }
+
+function shareVideo() {
+  const url = document.getElementById("youtubeLink").href;
+  navigator.clipboard.writeText(url);
+  alert("Video link copied to clipboard!");
+}
+
+document.getElementById("bodyFilter").addEventListener("change", e => {
+  const part = e.target.value;
+  let filtered = videos;
+  if (part !== "all") {
+    filtered = videos.filter(v => v.snippet.title.toLowerCase().includes(part));
+  }
+  renderVideos(filtered);
+});
+
+document.getElementById("latestTab").addEventListener("click", async () => {
+  document.getElementById("latestTab").classList.add("active");
+  document.getElementById("popularTab").classList.remove("active");
+  const latest = await fetchVideos("date");
+  videos = latest;
+  renderVideos(latest);
+});
+
+document.getElementById("popularTab").addEventListener("click", async () => {
+  document.getElementById("popularTab").classList.add("active");
+  document.getElementById("latestTab").classList.remove("active");
+  const latest = await fetchVideos("date");
+  const sorted = [...latest].sort((a,b) => parseInt(b.statistics.viewCount) - parseInt(a.statistics.viewCount));
+  videos = sorted;
+  renderVideos(sorted);
+});
+
+(async function init() {
+  const latest = await fetchVideos("date");
+  videos = latest;
+  renderVideos(latest);
+})();
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
