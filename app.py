@@ -1,111 +1,165 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import pandas as pd
-from datetime import datetime
+import mysql.connector
+from mysql.connector import Error
 import os
-import re
 
 app = Flask(__name__)
 CORS(app)
 
-EXCEL_FILE = 'registrations.xlsx'
+# ---------------- MySQL Connection ----------------
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",          # your MySQL username
+        password="12345",     # your MySQL password
+        database="corefit"
+    )
 
-def validate_email(email):
-    pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-    return re.match(pattern, email) is not None
+# ---------------- Serve uploaded photos ----------------
+@app.route('/uploads/photos/<filename>')
+def uploaded_photos(filename):
+    return send_from_directory('uploads/photos', filename)
 
-def validate_phone(phone):
-    pattern = r'^\d{10}$'
-    return re.match(pattern, phone) is not None
-
-def initialize_excel():
-    if not os.path.exists(EXCEL_FILE):
-        df = pd.DataFrame(columns=[
-            'timestamp',
-            'name',
-            'email',
-            'phone',
-            'age',
-            'gender',
-            'weight',
-            'goal',
-            'program'
-        ])
-        df.to_excel(EXCEL_FILE, index=False)
-
-@app.route('/api/register', methods=['POST'])
+# ---------------- Registration ----------------
+@app.route("/api/register", methods=["POST"])
 def register():
+    data = request.json
     try:
-        data = request.json
-        
-        # Validate required fields
-        required_fields = ['name', 'email', 'phone', 'age', 'gender', 'weight', 'goal', 'program']
-        for field in required_fields:
-            if field not in data:
-                return jsonify({'error': f'Missing required field: {field}'}), 400
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        sql = """INSERT INTO users
+                 (name, email, phone, age, gender, weight, goal, domain, program, password)
+                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+        values = (
+            data.get("name"), data.get("email"), data.get("phone"), data.get("age"),
+            data.get("gender"), data.get("weight"), data.get("goal"),
+            data.get("domain"), data.get("program"), data.get("password")
+        )
+        cursor.execute(sql, values)
+        conn.commit()
+        return jsonify({"message": "Registration successful"})
+    except Error as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        cursor.close()
+        conn.close()
 
-        # Validate email format
-        if not validate_email(data['email']):
-            return jsonify({'error': 'Invalid email format'}), 400
+# ---------------- Login ----------------
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.json
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        sql = "SELECT * FROM users WHERE email=%s AND password=%s"
+        cursor.execute(sql, (data.get("email"), data.get("password")))
+        user = cursor.fetchone()
+        if user:
+            return jsonify({"user": user})
+        else:
+            return jsonify({"error": "Invalid email or password"}), 400
+    except Error as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        cursor.close()
+        conn.close()
 
-        # Validate phone number
-        if not validate_phone(data['phone']):
-            return jsonify({'error': 'Phone number must be 10 digits'}), 400
+# ---------------- Offline Class ----------------
+@app.route("/api/offline-register", methods=["POST"])
+def offline_register():
+    data = request.json
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        sql = """INSERT INTO offline_classes
+                 (name, email, phone, date, timing, location, plan, amount)
+                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        values = (
+            data.get("name"), data.get("email"), data.get("phone"), data.get("date"),
+            data.get("timing"), data.get("location"), data.get("plan"), data.get("amount")
+        )
+        cursor.execute(sql, values)
+        conn.commit()
+        return jsonify({"message": "Offline class registration successful"})
+    except Error as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        cursor.close()
+        conn.close()
 
-        # Validate age
-        try:
-            age = int(data['age'])
-            if age < 5 or age > 100:
-                return jsonify({'error': 'Age must be between 5 and 100'}), 400
-        except ValueError:
-            return jsonify({'error': 'Invalid age format'}), 400
+# ---------------- Live Class ----------------
+@app.route("/api/live-register", methods=["POST"])
+def live_register():
+    data = request.json
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        sql = """INSERT INTO live_classes
+                 (name, email, phone, date, time, plan)
+                 VALUES (%s, %s, %s, %s, %s, %s)"""
+        values = (
+            data.get("name"), data.get("email"), data.get("phone"),
+            data.get("date"), data.get("time"), data.get("plan")
+        )
+        cursor.execute(sql, values)
+        conn.commit()
+        return jsonify({"message": "Live class registration successful"})
+    except Error as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        cursor.close()
+        conn.close()
 
-        # Validate weight
-        try:
-            weight = float(data['weight'])
-            if weight < 20 or weight > 300:
-                return jsonify({'error': 'Weight must be between 20 and 300 kg'}), 400
-        except ValueError:
-            return jsonify({'error': 'Invalid weight format'}), 400
+# ---------------- Testimonials ----------------
+@app.route("/api/testimonial", methods=["POST"])
+def testimonial():
+    data = request.form
+    files = request.files
 
-        # Create new registration entry
-        new_registration = {
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'name': data['name'],
-            'email': data['email'],
-            'phone': data['phone'],
-            'age': data['age'],
-            'gender': data['gender'],
-            'weight': data['weight'],
-            'goal': data['goal'],
-            'program': data['program']
-        }
+    photo_path = ""
 
-        # Read existing data
-        try:
-            df = pd.read_excel(EXCEL_FILE)
-        except FileNotFoundError:
-            initialize_excel()
-            df = pd.read_excel(EXCEL_FILE)
+    if "photo" in files:
+        photo = files["photo"]
+        if photo.filename:
+            os.makedirs('uploads/photos', exist_ok=True)
+            photo_path = f"uploads/photos/{photo.filename}"
+            photo.save(photo_path)
 
-        # Check for duplicate email
-        if data['email'] in df['email'].values:
-            return jsonify({'error': 'Email already registered'}), 400
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        sql = """INSERT INTO testimonials (name, review, photo_path)
+                 VALUES (%s, %s, %s)"""
+        values = (data.get("name"), data.get("review"), photo_path)
+        cursor.execute(sql, values)
+        conn.commit()
+        return jsonify({"message": "Testimonial submitted successfully"})
+    except Error as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        cursor.close()
+        conn.close()
 
-        # Append new registration
-        df = pd.concat([df, pd.DataFrame([new_registration])], ignore_index=True)
-        
-        # Save to Excel
-        df.to_excel(EXCEL_FILE, index=False)
+@app.route("/api/testimonials", methods=["GET"])
+def get_testimonials():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM testimonials")
+        result = cursor.fetchall()
+        return jsonify(result)
+    except Error as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        cursor.close()
+        conn.close()
 
-        return jsonify({
-            'message': 'Registration successful',
-            'data': new_registration
-        }), 201
+# ---------------- Test Endpoint ----------------
+@app.route("/api/test", methods=["GET"])
+def test():
+    return jsonify({"message": "Server is running"})
 
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-if __name__ == '__main__':
-    initialize_excel()
-    app.run(debug=True, port=5000) 
+# ---------------- Run Server ----------------
+if __name__ == "__main__":
+    app.run(debug=True)

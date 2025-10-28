@@ -221,80 +221,89 @@
   </div>
 
   <script>
-  const programData = {
-    "Yoga": ["Asanas", "Wellness Content", "Inspirational Quotes"],
-    "Fitness Programs": ["Strength Training", "Cardio Blast", "Core Conditioning", "Mobility and Flexibility"]
+const programData = {
+  "Yoga": ["Asanas", "Wellness Content", "Inspirational Quotes"],
+  "Fitness Programs": ["Strength Training", "Cardio Blast", "Core Conditioning", "Mobility and Flexibility"]
+};
+
+const domainSelect = document.getElementById('domain');
+const programSelect = document.getElementById('program');
+
+// Populate program dropdown based on domain selection
+domainSelect.addEventListener('change', () => {
+  const domain = domainSelect.value;
+  programSelect.innerHTML = '<option value="">--Select Program--</option>';
+  if (programData[domain]) {
+    programData[domain].forEach(program => {
+      const option = document.createElement('option');
+      option.value = program;
+      option.textContent = program;
+      programSelect.appendChild(option);
+    });
+  }
+});
+
+// Handle registration form submission
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const data = {
+    name: document.getElementById('name').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    age: document.getElementById('age').value.trim(),
+    gender: document.getElementById('gender').value.trim(),
+    program: document.getElementById('program').value.trim(),
+    weight: document.getElementById('weight').value.trim(),
+    goal: document.getElementById('goal').value.trim(),
+    domain: document.getElementById('domain').value.trim(),
+    password: document.getElementById('password').value.trim()
   };
 
-  const domainSelect = document.getElementById('domain');
-  const programSelect = document.getElementById('program');
+  // Check for empty fields
+  if (Object.values(data).some(val => val === "")) {
+    alert("Please fill all fields.");
+    return;
+  }
 
-  domainSelect.addEventListener('change', () => {
-    const domain = domainSelect.value;
-    programSelect.innerHTML = '<option value="">--Select Program--</option>';
-    if (programData[domain]) {
-      programData[domain].forEach(program => {
-        const option = document.createElement('option');
-        option.value = program;
-        option.textContent = program;
-        programSelect.appendChild(option);
-      });
-    }
-  });
+  try {
+    // Test backend connection
+    const testResponse = await fetch('http://localhost:5000/api/test');
+    if (!testResponse.ok) throw new Error('Server is not responding');
 
-  document.getElementById('submitBtn').addEventListener('click', async () => {
-    const data = {
-      name: document.getElementById('name').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-      age: document.getElementById('age').value.trim(),
-      gender: document.getElementById('gender').value.trim(),
-      program: document.getElementById('program').value.trim(),
-      weight: document.getElementById('weight').value.trim(),
-      goal: document.getElementById('goal').value.trim(),
-      domain: document.getElementById('domain').value.trim(),
-      password: document.getElementById('password').value.trim()
-    };
+    // Send registration data to backend
+    const response = await fetch('http://localhost:5000/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
 
-    if (Object.values(data).some(val => val === "")) {
-      alert("Please fill all fields.");
-      return;
-    }
+    const result = await response.json();
 
-    try {
-      const testResponse = await fetch('http://localhost:5000/api/test');
-      if (!testResponse.ok) throw new Error('Server is not responding');
-
-      const response = await fetch('http://localhost:5000/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        for (const key in data) {
-          sessionStorage.setItem(key, data[key]);
-        }
-        window.location.href = "home.html";
-      } else {
-        alert(`Registration failed: ${result.error}`);
+    if (response.ok) {
+      // Save data in sessionStorage for homepage use
+      for (const key in data) {
+        sessionStorage.setItem(key, data[key]);
       }
-    } catch (error) {
-      console.error('Error:', error);
-      alert("Error: " + error.message);
-    }
-  });
 
-  window.addEventListener('load', async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/test');
-      if (!response.ok) console.warn('Server test failed');
-    } catch (error) {
-      console.warn('Server not available:', error);
+      // Redirect to home page
+      window.location.href = "home.html";
+    } else {
+      alert(`Registration failed: ${result.error}`);
     }
-  });
+  } catch (error) {
+    console.error('Error:', error);
+    alert("Error: " + error.message);
+  }
+});
+
+// Optional: test server connectivity on page load
+window.addEventListener('load', async () => {
+  try {
+    const response = await fetch('http://localhost:5000/api/test');
+    if (!response.ok) console.warn('Server test failed');
+  } catch (error) {
+    console.warn('Server not available:', error);
+  }
+});
 </script>
 </body>
 </html>

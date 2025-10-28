@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: corefit
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn app:app
+    envVars:
+      - key: MYSQL_HOST
+        value: placeholder
+      - key: MYSQL_USER
+        value: placeholder
+      - key: MYSQL_PASSWORD
+        value: placeholder
+      - key: MYSQL_DATABASE
+        value: placeholder

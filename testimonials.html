@@ -1,139 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CoreFit | Testimonials</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f4f7fa;
-      color: #333;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoreFit | Testimonials</title>
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+  }
 
-    header {
-      background: linear-gradient(135deg, #816bff, #6753ff);
-      padding: 20px;
-      text-align: center;
-      color: white;
-      font-size: 26px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
+  header {
+    background: linear-gradient(135deg, #816bff, #6753ff);
+    padding: 25px 0;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
 
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 20px;
-    }
+  .container {
+    flex: 1;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    width: 95%;
+  }
 
-    .testimonial-form {
-      background: white;
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      margin-bottom: 40px;
-    }
+  .testimonial-form {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    margin-bottom: 40px;
+    backdrop-filter: blur(10px);
+  }
 
-    .testimonial-form h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #6e6bff;
-    }
+  .testimonial-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #FFD700;
+  }
 
-    .testimonial-form label {
-      display: block;
-      margin: 12px 0 6px;
-      font-weight: 500;
-    }
+  .testimonial-form label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: 500;
+  }
 
-    .testimonial-form input, 
-    .testimonial-form textarea {
-      width: 100%;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      outline: none;
-      transition: 0.2s;
-    }
+  .testimonial-form input, 
+  .testimonial-form textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
 
-    .testimonial-form input:focus, 
-    .testimonial-form textarea:focus {
-      border-color: #8b6bff;
-    }
+  .testimonial-form button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 10px;
+    background: #FFD700;
+    color: #000;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
 
-    .testimonial-form button {
-      display: block;
-      margin: 20px auto 0;
-      padding: 12px 25px;
-      border: none;
-      border-radius: 12px;
-      background: #6b75ff;
-      color: rgb(255, 255, 255);
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+  .testimonial-form button:hover {
+    background: #e6c200;
+  }
 
-    .testimonial-form button:hover {
-      background: #ff3b3b;
-    }
+  /* Carousel container */
+  .testimonials-carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 10px;
+    scroll-behavior: smooth;
+  }
 
-    .testimonials-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
+  .testimonials-carousel::-webkit-scrollbar {
+    height: 8px;
+  }
+  .testimonials-carousel::-webkit-scrollbar-thumb {
+    background: #FFD700;
+    border-radius: 4px;
+  }
 
-    .testimonial-card {
-      background: white;
-      padding: 20px;
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    }
+  .testimonial-card {
+    min-width: 220px;
+    max-width: 220px;
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    transition: transform 0.3s;
+  }
 
-    .testimonial-card h3 {
-      margin: 0 0 10px;
-      color: #444;
-    }
+  .testimonial-card:hover {
+    transform: translateY(-5px);
+  }
 
-    .testimonial-card p {
-      font-size: 14px;
-      color: #555;
-    }
+  .testimonial-card img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #FFD700;
+    cursor: pointer;
+    transition: 0.3s;
+  }
 
-    .testimonial-card img,
-    .testimonial-card video {
-      width: 100%;
-      border-radius: 12px;
-      margin-top: 12px;
-    }
-  </style>
+  .testimonial-card img:hover {
+    transform: scale(1.1);
+  }
+
+  .testimonial-card h3 {
+    margin: 0;
+    font-size: 14px;
+    color: #FFD700;
+  }
+
+  .testimonial-card p {
+    font-size: 12px;
+    color: #fff;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    z-index: 9999;
+  }
+
+  .lightbox.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lightbox img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 20px;
+    box-shadow: 0 0 20px #fff;
+  }
+
+  .lightbox span {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    font-size: 40px;
+    color: #fff;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
-  <header>🔥 CoreFit Testimonials</header>
+<header>🔥 CoreFit Testimonials</header>
 
-  <div class="container">
-    <div class="testimonial-form">
-      <h2>Share Your Experience 💬</h2>
-      <form>
-        <label for="name">Your Name</label>
-        <input type="text" id="name" placeholder="Enter your name" required>
+<div class="container">
+  <div class="testimonial-form">
+    <h2>Share Your Experience 💬</h2>
+    <form id="testimonialForm" enctype="multipart/form-data">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-        <label for="review">Your Review</label>
-        <textarea id="review" rows="4" placeholder="Write your experience..." required></textarea>
+      <label for="review">Your Review</label>
+      <textarea id="review" name="review" rows="4" placeholder="Write your experience..." required></textarea>
 
-        <label for="photo">Upload a Photo</label>
-        <input type="file" id="photo" accept="image/*">
+      <label for="photo">Upload a Photo</label>
+      <input type="file" id="photo" name="photo" accept="image/*">
 
-        <label for="video">Upload a Video</label>
-        <input type="file" id="video" accept="video/*">
-
-        <button type="submit">Submit Testimonial</button>
-      </form>
-    </div>
+      <button type="submit">Submit Testimonial</button>
+    </form>
   </div>
+
+  <div class="testimonials-carousel" id="testimonialsContainer"></div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <span id="closeLightbox">&times;</span>
+  <img id="lightboxImg" src="" alt="Expanded Photo">
+</div>
+
+<script>
+const form = document.getElementById("testimonialForm");
+const container = document.getElementById("testimonialsContainer");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const closeLightbox = document.getElementById("closeLightbox");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const formData = new FormData(form);
+
+  const res = await fetch("http://localhost:5000/api/testimonial", {
+    method: "POST",
+    body: formData
+  });
+  const data = await res.json();
+  alert(data.message);
+  loadTestimonials();
+  form.reset();
+});
+
+async function loadTestimonials() {
+  const res = await fetch("http://localhost:5000/api/testimonials");
+  const testimonials = await res.json();
+  container.innerHTML = "";
+  testimonials.forEach(t => {
+    const card = document.createElement("div");
+    card.className = "testimonial-card";
+    card.innerHTML = `
+      ${t.photo_path ? `<img src="http://localhost:5000/${t.photo_path}" alt="Photo">` : ""}
+      <h3>${t.name}</h3>
+      <p>${t.review}</p>
+    `;
+    container.appendChild(card);
+
+    if(t.photo_path){
+      const img = card.querySelector("img");
+      img.addEventListener("click", () => {
+        lightboxImg.src = img.src;
+        lightbox.classList.add("active");
+      });
+    }
+  });
+}
+
+closeLightbox.addEventListener("click", () => {
+  lightbox.classList.remove("active");
+});
+
+lightbox.addEventListener("click", (e) => {
+  if(e.target === lightbox) lightbox.classList.remove("active");
+});
+
+loadTestimonials();
+</script>
 </body>
 </html>

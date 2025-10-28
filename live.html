@@ -114,11 +114,20 @@
       paymentSection.style.display = "block";
 
       // Save registration details in backend
-      await fetch("http://localhost:5000/api/live-register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, plan, amount })
-      });
+      // Save registration details in backend
+await fetch("http://localhost:5000/api/live-register", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    name,
+    email,
+    phone,
+    plan,
+    amount,
+    timing
+  })
+}).then(res => res.json())
+  .then(data => alert(data.message));
     });
   </script>
 </body>

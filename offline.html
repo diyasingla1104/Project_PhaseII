@@ -128,13 +128,22 @@
       });
 
       paymentSection.style.display = "block";
-
       // Save offline registration details in backend
-      await fetch("http://localhost:5000/api/offline-register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, date, timing, location, plan, amount })
-      });
+await fetch("http://localhost:5000/api/offline-register", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    name,
+    email,
+    phone,
+    date,
+    timing,
+    location,
+    plan,
+    amount
+  })
+}).then(res => res.json())
+  .then(data => alert(data.message));
     });
   </script>
 </body>
