@@ -14,7 +14,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f2f2f2;
+      background: linear-gradient(120deg, #eef2ff 0%, #f8fafc 55%, #fff7ed 100%);
       display: flex;
     }
 
@@ -129,6 +129,53 @@
       background: white;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 18px;
+    }
+
+    .hero {
+      background: linear-gradient(130deg, #29293d, #364474);
+      color: #fff;
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: 0 12px 26px rgba(41, 41, 61, 0.22);
+      margin-bottom: 18px;
+    }
+
+    .hero p {
+      margin-top: 10px;
+      line-height: 1.55;
+      color: #e7e7f8;
+    }
+
+    .stats-grid, .features-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .stat-card, .feature-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+      border: 1px solid #f1f5f9;
+    }
+
+    .stat-card h3 {
+      color: #29293d;
+      margin-bottom: 6px;
+    }
+
+    .feature-card i {
+      color: #ffaa00;
+      margin-bottom: 10px;
+      font-size: 22px;
+    }
+
+    .feature-card p {
+      color: #334155;
+      font-size: 14px;
+      margin-top: 5px;
     }
 
     @media (max-width: 768px) {
@@ -185,9 +232,36 @@
       <a href="testimonials.html">testimonials</a>
     </nav>
 
-    <div class="content-section">
+    <section class="hero">
       <h2>Welcome to CoreFit!</h2>
-      <p>This is your personalized fitness platform. Use the tabs above to navigate through your workout, diet, and progress tools.</p>
+      <p>Track your fitness journey, explore workouts, and stay consistent with guided plans made for your goals.</p>
+    </section>
+
+    <div class="content-section">
+      <h2 style="margin-bottom:12px;">Your Quick Overview</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3 id="goal-card">Goal: --</h3>
+          <p>Your selected target stays visible here.</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="weight-card">Weight: --</h3>
+          <p>Track and update progress from the dashboard.</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="program-card">Program: --</h3>
+          <p>Access your chosen training path anytime.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2 style="margin-bottom:12px;">What You Can Do</h2>
+      <div class="features-grid">
+        <div class="feature-card"><i class="fas fa-dumbbell"></i><h4>Workout Plans</h4><p>Browse exercises and classes by category.</p></div>
+        <div class="feature-card"><i class="fas fa-apple-alt"></i><h4>Diet Guidance</h4><p>Find healthy meal ideas and calorie tools.</p></div>
+        <div class="feature-card"><i class="fas fa-chart-line"></i><h4>Progress Tracking</h4><p>Monitor improvements and stay motivated.</p></div>
+      </div>
     </div>
   </div>
 
@@ -199,6 +273,7 @@
     const age = sessionStorage.getItem("age") || "--";
     const goal = sessionStorage.getItem("goal") || "--";
     const weight = sessionStorage.getItem("weight") || "--";
+    const program = sessionStorage.getItem("program") || "--";
 
     document.getElementById("profile-name").innerText = `Welcome, ${name}`;
     document.getElementById("profile-details").innerHTML = `
@@ -207,6 +282,9 @@
       <p><i class="fas fa-dumbbell"></i> Goal: ${goal}</p>
       <p><i class="fas fa-weight"></i> Weight: ${weight} kg</p>
     `;
+    document.getElementById("goal-card").innerText = `Goal: ${goal}`;
+    document.getElementById("weight-card").innerText = `Weight: ${weight} kg`;
+    document.getElementById("program-card").innerText = `Program: ${program}`;
 
     const savedPic = sessionStorage.getItem("profilePic");
     if (savedPic) {
