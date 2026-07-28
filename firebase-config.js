@@ -3,12 +3,13 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-aut
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDV97ADwowkI1TGZPNBawajVbJw6B2HuDs",
+  authDomain: "fitness-and-wellbeing-c5afb.firebaseapp.com",
+  projectId: "fitness-and-wellbeing-c5afb",
+  storageBucket: "fitness-and-wellbeing-c5afb.firebasestorage.app",
+  messagingSenderId: "881837969586",
+  appId: "1:881837969586:web:921f2790b9fc2094bfb9ab",
+  measurementId: "G-9X77J112FL"
 };
 
 const isFirebaseConfigured = Object.values(firebaseConfig).every(
