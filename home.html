@@ -275,12 +275,25 @@
     const program = sessionStorage.getItem("program") || "--";
 
     document.getElementById("profile-name").innerText = `Welcome, ${name}`;
-    document.getElementById("profile-details").innerHTML = `
-      <p><i class="fas fa-envelope"></i> ${email}</p>
-      <p><i class="fas fa-birthday-cake"></i> age: ${age}</p>
-      <p><i class="fas fa-dumbbell"></i> Goal: ${goal}</p>
-      <p><i class="fas fa-weight"></i> Weight: ${weight} kg</p>
-    `;
+    const profileDetails = document.getElementById("profile-details");
+    profileDetails.textContent = "";
+
+    const rows = [
+      { icon: "fa-envelope", label: "", value: email },
+      { icon: "fa-birthday-cake", label: "age", value: age },
+      { icon: "fa-dumbbell", label: "Goal", value: goal },
+      { icon: "fa-weight", label: "Weight", value: `${weight} kg` }
+    ];
+
+    rows.forEach(({ icon, label, value }) => {
+      const row = document.createElement("p");
+      const iconEl = document.createElement("i");
+      iconEl.className = `fas ${icon}`;
+      row.appendChild(iconEl);
+      row.append(" ");
+      row.append(label ? `${label}: ${value}` : value);
+      profileDetails.appendChild(row);
+    });
     document.getElementById("goal-card").innerText = `Goal: ${goal}`;
     document.getElementById("weight-card").innerText = `Weight: ${weight} kg`;
     document.getElementById("program-card").innerText = `Program: ${program}`;
