@@ -200,7 +200,6 @@
           <option value="Live Classes">Live Classes</option>
           <option value="Offline Classes">Offline Classes</option>
           <option value="Counseling">Counseling</option>
-          <option value="Yoga">Yoga</option>
           <option value="Fitness Programs">Fitness Programs</option>
         </select>
       </div>
@@ -224,12 +223,15 @@
     <a href="#" id="back-home">Back to Homepage</a>
   </div>
 
-  <script>
+  <script type="module">
+  import { auth, db, isFirebaseConfigured } from "./firebase-config.js";
+  import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
   const programData = {
     "Live Classes": ["Real-Time Workouts", "Interactive Yoga Classes", "Expert Talks & Q&A", "Community Challenges"],
     "Offline Classes": ["In-Gym Training", "Outdoor Bootcamps", "Wellness Workshops", "Certification Programs"],
     "Counseling": ["Mental Wellness Support", "Nutritional Counselling", "Fitness Goal Coaching", "Lifestyle Guidance"],
-    "Yoga": ["Asanas", "Wellness Content", "Inspirational Quotes"],
     "Fitness Programs": ["Strength Training", "Cardio Blast", "Core Conditioning", "Mobility and Flexibility"]
   };
 
@@ -268,38 +270,34 @@
       return;
     }
 
-    try {
-      const testResponse = await fetch('http://localhost:5000/api/test');
-      if (!testResponse.ok) throw new Error('Server is not responding');
+    if (!isFirebaseConfigured || !auth || !db) {
+      alert("Firebase is not configured. Add your Firebase console config in firebase-config.js.");
+      return;
+    }
 
-      const response = await fetch('http://localhost:5000/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+    try {
+      const credential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      await setDoc(doc(db, "users", credential.user.uid), {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        age: data.age,
+        gender: data.gender,
+        program: data.program,
+        weight: data.weight,
+        goal: data.goal,
+        domain: data.domain,
+        createdAt: serverTimestamp()
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        for (const key in data) {
+      for (const key in data) {
+        if (key !== "password") {
           sessionStorage.setItem(key, data[key]);
         }
-        window.location.href = "home.html";
-      } else {
-        alert(`Registration failed: ${result.error}`);
       }
+      window.location.href = "home.html";
     } catch (error) {
-      console.error('Error:', error);
-      alert("Error: " + error.message);
-    }
-  });
-
-  window.addEventListener('load', async () => {
-    try {
-      const response = await fetch('http://localhost:5000/api/test');
-      if (!response.ok) console.warn('Server test failed');
-    } catch (error) {
-      console.warn('Server not available:', error);
+      alert(`Registration failed: ${error.message || "Unknown error"}`);
     }
   });
 </script>

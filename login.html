@@ -120,59 +120,62 @@
     <a href="registration.html">Don't have an account? Register here</a>
   </div>
 
-  <script>
-  document.getElementById('loginBtn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const messageEl = document.getElementById('message');
+  <script type="module">
+    import { auth, db, isFirebaseConfigured } from "./firebase-config.js";
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-    if (!email || !password) {
-      messageEl.textContent = 'Please fill in both fields.';
-      messageEl.className = 'message error';
-      return;
+    const messageEl = document.getElementById("message");
+
+    if (!isFirebaseConfigured) {
+      messageEl.textContent = "Firebase is not configured. Add your Firebase console config in firebase-config.js.";
+      messageEl.className = "message error";
     }
 
-    try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      const result = await response.json();
-
-      if (response.ok) {
-  messageEl.textContent = 'Login successful! Redirecting...';
-  messageEl.className = 'message success';
-
-  const user = result.user;
-  console.log("User data received:", user); // ✅ DEBUG
-
-  sessionStorage.setItem("name", user.name || user.Name || "--");
-  sessionStorage.setItem("email", user.email || user.Email || "--");
-  sessionStorage.setItem("phone", user.phone || user.Phone || "--");
-  sessionStorage.setItem("age", user.age || user.Age || "--");
-  sessionStorage.setItem("gender", user.gender || user.Gender || "--");
-  sessionStorage.setItem("program", user.program || user.Program || "--");
-  sessionStorage.setItem("weight", user.weight || user.Weight || "--");
-  sessionStorage.setItem("goal", user.goal || user.Goal || "--");
-  sessionStorage.setItem("domain", user.domain || user.Domain || "--");
-
-  setTimeout(() => {
-    window.location.href = "home.html";
-  }, 1500);
-
-      } else {
-        messageEl.textContent = result.error || 'Login failed';
-        messageEl.className = 'message error';
+      if (!email || !password) {
+        messageEl.textContent = "Please fill in both fields.";
+        messageEl.className = "message error";
+        return;
       }
-    } catch (error) {
-      messageEl.textContent = 'Error connecting to server.';
-      messageEl.className = 'message error';
-      console.error(error);
-    }
-  });
-</script>
+
+      if (!isFirebaseConfigured || !auth || !db) {
+        messageEl.textContent = "Firebase configuration is missing.";
+        messageEl.className = "message error";
+        return;
+      }
+
+      try {
+        const credential = await signInWithEmailAndPassword(auth, email, password);
+        const userDocRef = doc(db, "users", credential.user.uid);
+        const userDoc = await getDoc(userDocRef);
+        const profile = userDoc.exists() ? userDoc.data() : {};
+
+        messageEl.textContent = "Login successful! Redirecting...";
+        messageEl.className = "message success";
+
+        sessionStorage.setItem("name", profile.name || "--");
+        sessionStorage.setItem("email", profile.email || email);
+        sessionStorage.setItem("phone", profile.phone || "--");
+        sessionStorage.setItem("age", profile.age || "--");
+        sessionStorage.setItem("gender", profile.gender || "--");
+        sessionStorage.setItem("program", profile.program || "--");
+        sessionStorage.setItem("weight", profile.weight || "--");
+        sessionStorage.setItem("goal", profile.goal || "--");
+        sessionStorage.setItem("domain", profile.domain || "--");
+
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 1200);
+      } catch (error) {
+        messageEl.textContent = error.message || "Login failed";
+        messageEl.className = "message error";
+      }
+    });
+  </script>
 
 </body>
 </html>
